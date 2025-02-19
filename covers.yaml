@@ -2,7 +2,7 @@
   covers:
     salon_cover:
       device_class: curtain
-      friendly_name: "Salon cover"
+      friendly_name: "salon cover"
       unique_id: salon_cover
       value_template: "{{ state_attr('cover.salon_curtain', 'current_position') | int > 0 }}"
       position_template: "{{ 100 - state_attr('cover.salon_curtain', 'current_position') | int }}"
@@ -15,3 +15,21 @@
       stop_cover:
         action: cover.stop_cover
         entity_id: "cover.salon_curtain"
+
+- platform: template
+  covers:
+    misafir_cover:
+      device_class: curtain
+      friendly_name: "misafir cover"
+      unique_id: misafir_cover
+      value_template: "{{ state_attr('cover.misafir_curtain', 'current_position') | int > 0 }}"
+      position_template: "{{ 100 - state_attr('cover.misafir_curtain', 'current_position') | int }}"
+      open_cover:
+        action: cover.close_cover
+        entity_id: "cover.misafir_curtain"
+      close_cover:
+        action: cover.open_cover
+        entity_id: "cover.misafir_curtain"
+      stop_cover:
+        action: cover.stop_cover
+        entity_id: "cover.misafir_curtain"
