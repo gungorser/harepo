@@ -25,10 +25,10 @@
       value_template: "{{ state_attr('cover.misafir_curtain', 'current_position') | int > 0 }}"
       position_template: "{{ 100 - state_attr('cover.misafir_curtain', 'current_position') | int }}"
       open_cover:
-        action: cover.close_cover
+        action: cover.open_cover
         entity_id: "cover.misafir_curtain"
       close_cover:
-        action: cover.open_cover
+        action: cover.close_cover
         entity_id: "cover.misafir_curtain"
       stop_cover:
         action: cover.stop_cover
