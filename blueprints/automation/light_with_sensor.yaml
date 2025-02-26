@@ -1,5 +1,5 @@
 blueprint:
-  name: lightsensor
+  name: light_with_sensor
   description: Light sensor automation
   domain: automation
   input:
@@ -14,8 +14,8 @@ blueprint:
       selector:
         entity:
           domain: binary_sensor
-    
-alias: Lightsensor
+
+alias: light_with_sensor
 
 trigger:
   - platform: state
@@ -33,7 +33,7 @@ trigger:
     id: "light"
 variables:
   light: !input light
-  name:"{{light.split('.')[1]}}"
+  name: "{{ light.split('.')[1] }}"
   brightness: 125
   transition: 2.0
 action:
