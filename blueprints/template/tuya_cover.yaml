@@ -1,0 +1,33 @@
+blueprint:
+  name: tuya_curtain
+  description: Tuya curtain motor, with invert functionality
+  domain: template
+  input:
+    source:
+      name: cover
+      selector:
+        entity:
+          domain: cover
+    inverted:
+      name: inverted
+      selector: boolean
+
+variables:
+  source: !input source
+  name: "{{source.split('.')[1] + '_template'}}"
+  inverted: !input inverted
+  
+device_class: curtain
+friendly_name: "{{name}}"
+unique_id: "{{name}}"
+value_template: "{{ state_attr(source, 'current_position') | int > 0 }}"
+position_template: "{{ 100 - state_attr(source, 'current_position') | int }}"
+open_cover:
+  action: "{{ 'cover.{}_cover'.format('closed' if inverted else 'open')}}"
+  entity_id: "{{source}}"
+close_cover:
+  action: "{{ 'cover.{}_cover'.format('closed' if inverted else 'open')}}"
+  entity_id: "{{source}}"
+stop_cover:
+  action: cover.stop_cover
+  entity_id: "{{source}}"
