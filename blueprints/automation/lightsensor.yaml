@@ -33,6 +33,7 @@ trigger:
     id: "light"
 variables:
   light: !input light
+  name:"{{light.split('.')[1]}}"
   brightness: 125
   transition: 2.0
 action:
@@ -46,7 +47,7 @@ action:
         sequence:
           - action: scene.create
             data:
-              scene_id: "{{light.split('.')[1]}}"
+              scene_id: "{{name}}"
               snapshot_entities:
                 - !input light
           - action: light.turn_on
@@ -67,7 +68,7 @@ action:
         sequence:
           - action: scene.create
             data:
-              scene_id: "{{light.split('.')[1]}}"
+              scene_id: "{{name}}"
               snapshot_entities:
                 - !input light
       - conditions:
@@ -76,6 +77,6 @@ action:
         sequence:
           - action: scene.turn_on
             target:
-              entity_id: "{{'scene.'+light.split('.')[1]}}"
+              entity_id: "{{'scene.'+name}}"
 
 mode: single
