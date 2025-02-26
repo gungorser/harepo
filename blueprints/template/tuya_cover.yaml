@@ -4,19 +4,20 @@ blueprint:
   domain: template
   input:
     source:
-      name: cover
+      name: Cover entity
       selector:
         entity:
           domain: cover
     inverted:
-      name: inverted
-      selector: boolean
+      name: Invert open-close behavior
+      selector:
+        boolean:
 
 variables:
   source: !input source
   name: "{{source.split('.')[1] + '_template'}}"
   inverted: !input inverted
-  
+
 device_class: curtain
 friendly_name: "{{name}}"
 unique_id: "{{name}}"
