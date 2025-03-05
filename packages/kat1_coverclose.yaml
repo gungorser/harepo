@@ -1,48 +1,53 @@
 automation:
-  - alias: kat1_coverclose
-    id: kat1_coverclose
+  - id: "kat1_coverclose"
+    alias: kat1_coverclose
     description: ""
-    mode: single
     triggers:
       - domain: mqtt
         device_id: 1d49a19304191ce333202639e9ed74d5
         type: action
         subtype: 1_hold
         trigger: device
+        id: button
       - domain: mqtt
         device_id: d3fd09e3b60a91f37e64b9137c1bba7b
         type: action
         subtype: 3_hold
         trigger: device
+        id: button
       - domain: mqtt
         device_id: 3b076af749562b3dfa18416768178b40
         type: action
         subtype: 2_hold
         trigger: device
+        id: button
     conditions: []
     actions:
       - choose:
           - conditions:
-              - condition: device
-                device_id: 55645f1a2aac90ba7d8efb2482aeb112
-                domain: cover
-                entity_id: 3cf75af92ab077ca22fdaafb105d4822
-                type: is_open
+              - condition: template
+                value_template:
+                  "{{ devices | map('states') | reject('eq', 'closed')
+                  | list | count > 0 }}"
             sequence:
+              - action: scene.create
+                metadata: {}
+                data:
+                  scene_id: kat1_coverclose
+                  snapshot_entities: "{{devices}}"
               - action: cover.close_cover
                 metadata: {}
                 data: {}
                 target:
-                  area_id:
-                    - bedroom
-                    - koridor1
-                    - melike_ofis
+                  entity_id: "{{devices}}"
           - conditions: []
             sequence:
-              - action: cover.open_cover
-                target:
-                  area_id:
-                    - bedroom
-                    - koridor1
-                    - melike_ofis
+              - action: scene.turn_on
+                metadata: {}
                 data: {}
+                target:
+                  entity_id: scene.kat1_coverclose
+    variables:
+      devices: "{{ floor_areas('1_kat') | map('area_entities') | sum(start=[]) |
+        select('in', states.cover | map(attribute='entity_id')| list)| list}}"
+    mode: single
