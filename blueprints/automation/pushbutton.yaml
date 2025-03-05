@@ -1,0 +1,211 @@
+blueprint:
+  name: pushbutton
+  description: pushbutton automation
+  domain: automation
+  input:
+    room:
+      name: Room
+      selector:
+        area:
+    device:
+      name: Push Button Device
+      description: Count of the buttons in the device
+      selector:
+        device:
+          entity:
+            domain: sensor
+    button1:
+      name: Button 1 function
+      selector:
+        select:
+          options:
+            - none
+            - light
+            - climate
+            - cover
+    button2:
+      name: Button 2 function
+      selector:
+        select:
+          options:
+            - none
+            - light
+            - climate
+            - cover
+    button3:
+      name: Button 3 function
+      selector:
+        select:
+          options:
+            - none
+            - light
+            - climate
+            - cover
+
+alias: Roomstate
+
+trigger:
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "single"
+    id: single
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "double"
+    id: double
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "1_single"
+    id: 1_single
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "1_double"
+    id: 1_double
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "2_single"
+    id: 2_single
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "2_double"
+    id: 2_double
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "3_single"
+    id: 3_single
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "3_double"
+    id: 3_double
+
+variables:
+  room: !input room
+  button1: !input button1
+  button2: !input button2
+  button3: !input button3
+  transition: 1.0
+
+  lights: >-
+    {{  states.light 
+      | selectattr('entity_id', 'in', area_entities(room)) 
+      | map(attribute='entity_id') 
+      | list }}
+  climates: >-
+    {{  states.climate 
+      | selectattr('entity_id', 'in', area_entities(room)) 
+      | map(attribute='entity_id') 
+      | list }}
+  covers: >-
+    {{  states.cover 
+      | selectattr('entity_id', 'in', area_entities(room)) 
+      | map(attribute='entity_id') 
+      | list }}
+  functions: >-
+    {{ {
+      button1: {'single':'single', 'double':'double', '1_single':'single', '1_double': 'double'},
+      button2: {'2_single':'single', '2_double':'double'},
+      button3: {'3_single':'single', '3_double':'double'}
+    } }}
+action:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ 'light' in functions and trigger.id in functions['light'] }}
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: >-
+                      {{ states.light
+                        | selectattr('entity_id', 'in', lights)
+                        | rejectattr('state', 'eq', 'off')
+                        | list | count > 0
+                      }}
+                sequence:
+                  - action: light.turn_off
+                    metadata: {}
+                    data:
+                      transition: "{{transition}}"
+                    target: "{{ {'entity_id': lights} }}"
+              - conditions:
+                  - condition: template
+                    value_template: >-
+                      {{ functions['light'][trigger.id] == 'single' }}
+                sequence:
+                  - action: light.turn_on
+                    metadata: {}
+                    data:
+                      brightness: 255
+                      transition: 1
+                    target: "{{ {'entity_id': lights} }}"
+              - conditions:
+                  - condition: template
+                    value_template: >-
+                      {{ functions['light'][trigger.id] == 'double' }}
+                sequence:
+                  - action: light.turn_on
+                    metadata: {}
+                    data:
+                      transition: "{{transition}}"
+                      brightness: 25
+                    target: "{{ {'entity_id': lights} }}"
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ 'climate' in functions and trigger.id in functions['climate'] }}
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: >-
+                      {{ functions['cover'][trigger.id] == 'single'}}
+                sequence:
+                  - action: climate.turn_on
+                    metadata: {}
+                    data: {}
+                    target: "{{ {'entity_id': climates} }}"
+              - conditions: []
+                sequence:
+                  - action: climate.turn_off
+                    metadata: {}
+                    data: {}
+                    target: "{{ {'entity_id': climates} }}"
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ 'cover' in functions and trigger.id in functions['cover'] }}
+        sequence:
+          - choose:
+              - conditions:
+                  - condition: template
+                    value_template: >-
+                      {{ functions['cover'][trigger.id] == 'single'}}
+                sequence:
+                  - action: cover.open_cover
+                    metadata: {}
+                    data: {}
+                    target: "{{ {'entity_id': covers} }}"
+              - conditions: []
+                sequence:
+                  - action: cover.close_cover
+                    metadata: {}
+                    data: {}
+                    target: "{{ {'entity_id': covers} }}"
+mode: single

@@ -4,7 +4,7 @@ automation:
     alias: bahce_pushbutton
     description: ""
     use_blueprint:
-      path: gungorser/pushbutton_2.yaml
+      path: gungorser/pushbutton.yaml
       input:
         room: bahce
         device: 8e701a3dcd1931b7132dfdcf8e31615b
@@ -16,7 +16,7 @@ automation:
     alias: koridor0_pushbutton
     description: ""
     use_blueprint:
-      path: gungorser/pushbutton_2.yaml
+      path: gungorser/pushbutton.yaml
       input:
         room: corridor0
         device: 11a1c6bc68faf4b5b988027ca757eb1b
@@ -28,7 +28,7 @@ automation:
     alias: koridor1_pushbutton
     description: ""
     use_blueprint:
-      path: gungorser/pushbutton_2.yaml
+      path: gungorser/pushbutton.yaml
       input:
         room: koridor1
         device: 3b076af749562b3dfa18416768178b40
@@ -40,7 +40,7 @@ automation:
     alias: koridor2_pushbutton
     description: ""
     use_blueprint:
-      path: gungorser/pushbutton_2.yaml
+      path: gungorser/pushbutton.yaml
       input:
         room: attic
         device: 6c88534b8be990d5fe3cc0782ae96138
@@ -52,7 +52,7 @@ automation:
     alias: gardirop_pushbutton
     description: ""
     use_blueprint:
-      path: gungorser/pushbutton_2.yaml
+      path: gungorser/pushbutton.yaml
       input:
         room: gardirop
         device: 645fdd8ff68dd5824c305ae84447042a
@@ -64,7 +64,7 @@ automation:
     alias: garaj_pushbutton
     description: ""
     use_blueprint:
-      path: gungorser/pushbutton_2.yaml
+      path: gungorser/pushbutton.yaml
       input:
         room: garaj
         device: d194e781625697f06ff6a067a2b297ac
@@ -76,7 +76,7 @@ automation:
     alias: sercan_pushbutton
     description: ""
     use_blueprint:
-      path: gungorser/pushbutton_2.yaml
+      path: gungorser/pushbutton.yaml
       input:
         room: melike_ofis
         device: d3fd09e3b60a91f37e64b9137c1bba7b
@@ -88,7 +88,7 @@ automation:
     alias: yatak_pushbutton
     description: ""
     use_blueprint:
-      path: gungorser/pushbutton_2.yaml
+      path: gungorser/pushbutton.yaml
       input:
         button1: cover
         button2: climate
@@ -100,7 +100,7 @@ automation:
     alias: misafir_pushbutton
     description: ""
     use_blueprint:
-      path: gungorser/pushbutton_2.yaml
+      path: gungorser/pushbutton.yaml
       input:
         room: sercan_ofis
         device: 7f94718f6e3179997e7f7f42c2b287c4
@@ -112,7 +112,7 @@ automation:
     alias: melike_pushbutton
     description: ""
     use_blueprint:
-      path: gungorser/pushbutton_2.yaml
+      path: gungorser/pushbutton.yaml
       input:
         room: guest_room
         device: 325f6eeb70e622f7c6c41c53b80583e3
