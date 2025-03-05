@@ -1,0 +1,157 @@
+automation:
+  # Blueprint based automations
+  - id: "bahce_pushbutton"
+    alias: bahce_pushbutton
+    description: ""
+    use_blueprint:
+      path: gungorser/pushbutton_2.yaml
+      input:
+        room: bahce
+        device: 8e701a3dcd1931b7132dfdcf8e31615b
+        button1: light
+        button2: none
+        button3: none
+
+  - id: "koridor0_pushbutton"
+    alias: koridor0_pushbutton
+    description: ""
+    use_blueprint:
+      path: gungorser/pushbutton_2.yaml
+      input:
+        room: corridor0
+        device: 11a1c6bc68faf4b5b988027ca757eb1b
+        button1: none
+        button2: light
+        button3: none
+
+  - id: "koridor1_pushbutton"
+    alias: koridor1_pushbutton
+    description: ""
+    use_blueprint:
+      path: gungorser/pushbutton_2.yaml
+      input:
+        room: koridor1
+        device: 3b076af749562b3dfa18416768178b40
+        button1: light
+        button2: cover
+        button3: none
+
+  - id: "koridor2_pushbutton"
+    alias: koridor2_pushbutton
+    description: ""
+    use_blueprint:
+      path: gungorser/pushbutton_2.yaml
+      input:
+        room: attic
+        device: 6c88534b8be990d5fe3cc0782ae96138
+        button1: light
+        button2: none
+        button3: none
+
+  - id: "gardirop_pushbutton"
+    alias: gardirop_pushbutton
+    description: ""
+    use_blueprint:
+      path: gungorser/pushbutton_2.yaml
+      input:
+        room: gardirop
+        device: 645fdd8ff68dd5824c305ae84447042a
+        button1: light
+        button2: none
+        button3: none
+
+  - id: "garaj_pushbutton"
+    alias: garaj_pushbutton
+    description: ""
+    use_blueprint:
+      path: gungorser/pushbutton_2.yaml
+      input:
+        room: garaj
+        device: d194e781625697f06ff6a067a2b297ac
+        button1: light
+        button2: none
+        button3: none
+
+  - id: "sercan_pushbutton"
+    alias: sercan_pushbutton
+    description: ""
+    use_blueprint:
+      path: gungorser/pushbutton_2.yaml
+      input:
+        room: melike_ofis
+        device: d3fd09e3b60a91f37e64b9137c1bba7b
+        button1: light
+        button2: climate
+        button3: cover
+
+  - id: "yatak_pushbutton"
+    alias: yatak_pushbutton
+    description: ""
+    use_blueprint:
+      path: gungorser/pushbutton_2.yaml
+      input:
+        button1: cover
+        button2: climate
+        button3: light
+        room: bedroom
+        device: 1d49a19304191ce333202639e9ed74d5
+
+  - id: "misafir_pushbutton"
+    alias: misafir_pushbutton
+    description: ""
+    use_blueprint:
+      path: gungorser/pushbutton_2.yaml
+      input:
+        room: sercan_ofis
+        device: 7f94718f6e3179997e7f7f42c2b287c4
+        button1: cover
+        button2: climate
+        button3: light
+
+  - id: "melike_pushbutton"
+    alias: melike_pushbutton
+    description: ""
+    use_blueprint:
+      path: gungorser/pushbutton_2.yaml
+      input:
+        room: guest_room
+        device: 325f6eeb70e622f7c6c41c53b80583e3
+        button1: light
+        button2: climate
+        button3: none
+
+  # These two automation are not blueprint based!
+  - id: "tavan_pushbutton"
+    alias: tavan_pushbutton
+    description: ""
+    triggers:
+      - domain: mqtt
+        device_id: 6c88534b8be990d5fe3cc0782ae96138
+        type: action
+        subtype: 2_single
+        trigger: device
+    conditions: []
+    actions:
+      - type: toggle
+        device_id: f8730c7d7f85382ebc3ad729d68fb1cd
+        entity_id: f2950d0d00b1d03e0893d6a115201513
+        domain: light
+    mode: single
+
+  - id: "car_pushbutton"
+    alias: car_pushbutton
+    description: ""
+    trigger:
+      - platform: device
+        domain: mqtt
+        device_id: 11a1c6bc68faf4b5b988027ca757eb1b
+        type: action
+        subtype: 1_single
+    condition: []
+    action:
+      - action: light.toggle
+        metadata: {}
+        data: {}
+        target:
+          entity_id: light.car_light
+    mode: single
