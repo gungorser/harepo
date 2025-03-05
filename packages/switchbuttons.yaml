@@ -1,0 +1,24 @@
+- id: "banyo_switchbutton"
+  alias: banyo_switchbutton
+  description: ""
+  use_blueprint:
+    path: gungorser/switchbutton.yaml
+    input:
+      switch: switch.banyo_left
+      light: light.banyo_light
+- id: "bahce_switchbutton"
+  alias: bahce_switchbutton
+  description: ""
+  use_blueprint:
+    path: gungorser/switchbutton.yaml
+    input:
+      switch: switch.yemek_3
+      light: light.bahce_light
+- id: "yemek_switchbutton"
+  alias: yemek_switchbutton
+  description: ""
+  use_blueprint:
+    path: gungorser/switchbutton.yaml
+    input:
+      switch: switch.yemek_1
+      light: light.yemek_light

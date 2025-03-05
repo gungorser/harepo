@@ -1,0 +1,58 @@
+blueprint:
+  name: Switch Button
+  description: Sync Switch button relay state and light state.
+  domain: automation
+  input:
+    switch:
+      name: switch
+      description: The switch which controls the light
+      selector:
+        entity:
+          domain: switch
+    light:
+      name: light
+      description: The light to be controlled.
+      selector:
+        entity:
+          domain: light
+alias: switch_button
+description: ""
+trigger:
+  - platform: state
+    entity_id:
+      - !input switch
+      - !input light
+    from: "off"
+    to: "on"
+    id: to_on
+  - platform: state
+    entity_id:
+      - !input switch
+      - !input light
+    from: "on"
+    to: "off"
+    id: to_off
+variables:
+  entities:
+    - !input switch
+    - !input light
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id: to_on
+        sequence:
+          - action: homeassistant.turn_on
+            metadata: {}
+            data: {}
+            target:
+              entity_id: "{{entities | rejectattr('entity_id', 'eq', trigger.entity_id ) | list }}"
+      - conditions:
+        sequence:
+          - action: homeassistant.turn_off
+            metadata: {}
+            data: {}
+            target:
+              entity_id: "{{entities | rejectattr('entity_id', 'eq', trigger.entity_id ) | list }}"
+mode: single
