@@ -1,0 +1,74 @@
+template:
+  - sensor:
+      - name: misafir_thermostat
+        unique_id: misafir_thermostat
+        unit_of_measurement: "°C"
+        state: "{{ state_attr('climate.misafir_climate', 'current_temperature') }}"
+        availability: "{{ states('climate.misafir_climate') != 'unavailable' }}"
+        device_class: temperature
+
+input_number:
+  misafir_thermostat:
+    name: misafir_thermostat
+    initial: 0
+    min: 0
+    max: 100
+    step: 1
+
+automation:
+  - alias: "misafir_thermostat"
+    id: "misafir_thermostat"
+    triggers:
+      - trigger: state
+        entity_id: input_number.misafir_thermostat
+        id: pidvalue
+      - trigger: state
+        entity_id:
+          - climate.misafir_thermostat
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id:
+                  - pidvalue
+            sequence:
+              - action: number.set_value
+                target:
+                  entity_id: number.misafir_climate_valve_opening_degree
+                data:
+                  value: "{{ trigger.to_state.state | int }}"
+              - action: number.set_value
+                target:
+                  entity_id: number.misafir_climate_valve_closing_degree
+                data:
+                  value: "{{ 100 - (trigger.to_state.state | int) }}"
+          - conditions: []
+            sequence:
+              - action: climate.set_hvac_mode
+                metadata: {}
+                target:
+                  entity_id: "climate.misafir_climate"
+                data:
+                  hvac_mode: "{{states('climate.misafir_thermostat')}}"
+              - action: climate.set_temperature
+                metadata: {}
+                target:
+                  entity_id: "climate.misafir_climate"
+                data:
+                  temperature: "{{state_attr('climate.misafir_thermostat', 'temperature')}}"
+    mode: single
+
+climate:
+  - platform: smart_thermostat
+    name: misafir_thermostat
+    unique_id: misafir_thermostat
+    heater: input_number.misafir_thermostat
+    target_sensor: sensor.misafir_thermostat
+    target_temp: 19
+    keep_alive:
+      seconds: 60
+    kp: 60
+    ki: 0.01
+    kd: 2000
+    min_cycle_duration: 10
+    pwm: 0
