@@ -34,14 +34,24 @@ automation:
         data:
           value: "{{ 100 - (trigger.to_state.state | int) }}"
     mode: single
-  - alias: "misafir_thermostat"
-    id: "misafir_thermostat"
+  - alias: "misafir_thermostat_state"
+    id: "misafir_thermostat_state"
     triggers:
       - trigger: state
         entity_id: climate.misafir_thermostat
+        to: heat
+        id: thermostat
+      - trigger: state
+        entity_id: climate.misafir_thermostat
+        to: "off"
         id: thermostat
       - trigger: state
         entity_id: climate.misafir_climate
+        to: heat
+        id: climate
+      - trigger: state
+        entity_id: climate.misafir_climate
+        to: "off"
         id: climate
     actions:
       - choose:
@@ -55,12 +65,6 @@ automation:
                   entity_id: "climate.misafir_climate"
                 data:
                   hvac_mode: "{{states('climate.misafir_thermostat')}}"
-              - action: climate.set_temperature
-                metadata: {}
-                target:
-                  entity_id: "climate.misafir_climate"
-                data:
-                  temperature: "{{state_attr('climate.misafir_thermostat', 'temperature')}}"
           - conditions:
               - condition: trigger
                 id: climate
@@ -71,6 +75,39 @@ automation:
                   entity_id: "climate.misafir_thermostat"
                 data:
                   hvac_mode: "{{states('climate.misafir_climate')}}"
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 2
+          milliseconds: 0
+    mode: single
+  - alias: "misafir_thermostat_temperature"
+    id: "misafir_thermostat_temperature"
+    triggers:
+      - trigger: state
+        entity_id: climate.misafir_thermostat
+        attribute: temperature
+        id: thermostat
+      - trigger: state
+        entity_id: climate.misafir_climate
+        attribute: temperature
+        id: climate
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id: thermostat
+            sequence:
+              - action: climate.set_temperature
+                metadata: {}
+                target:
+                  entity_id: "climate.misafir_climate"
+                data:
+                  temperature: "{{state_attr('climate.misafir_thermostat', 'temperature')}}"
+          - conditions:
+              - condition: trigger
+                id: climate
+            sequence:
               - action: climate.set_temperature
                 metadata: {}
                 target:
@@ -98,3 +135,5 @@ climate:
     kd: 2000
     min_cycle_duration: 10
     pwm: 0
+    min_temp: 4
+    max_temp: 35
