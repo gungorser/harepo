@@ -1,0 +1,42 @@
+automation:
+  - alias: "thermostat_switch"
+    id: "thermostat_switch"
+    description: ""
+    triggers:
+      - value_template: |-
+          {{ expand(states.climate) 
+          | selectattr('entity_id', 'match', 'climate.*_thermostat') 
+          | map(attribute='state') 
+          | select('match', 'heat')
+          | list | count>0 }}
+        trigger: template
+        id: heat
+      - value_template: |-
+          {{ expand(states.climate) 
+          | selectattr('entity_id', 'match', 'climate.*_thermostat') 
+          | map(attribute='state') 
+          | select('match', 'heat')
+          | list | count==0 }}
+        trigger: template
+        id: "off"
+    conditions: []
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id:
+                  - heat
+            sequence:
+              - action: switch.turn_on
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: switch.koridor2_switch
+          - conditions: []
+            sequence:
+              - action: switch.turn_off
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: switch.koridor2_switch
+    mode: restart
