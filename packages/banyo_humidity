@@ -1,0 +1,32 @@
+automation:
+  - id: "banyo_humidity"
+    alias: banyo_humidity
+    mode: single
+    triggers:
+      - trigger: template
+        value_template: "{{ states('sensor.banyo_moisture_humidity') | float(0) > 45 }}"
+        id: "on"
+      - trigger: template
+        value_template: "{{ states('sensor.banyo_moisture_humidity') | float(0) <= 45 }}"
+        id: "off"
+    conditions: []
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id:
+                  - "on"
+            sequence:
+              - action: switch.turn_on
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: fan.banyo_fan
+          - conditions: []
+            sequence:
+              - action: switch.turn_off
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: fan.banyo_fan
+
