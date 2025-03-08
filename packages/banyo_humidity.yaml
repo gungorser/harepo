@@ -4,10 +4,10 @@ automation:
     mode: single
     triggers:
       - trigger: template
-        value_template: "{{ states('sensor.banyo_moisture_humidity') | float(0) > 45 }}"
+        value_template: "{{ states('sensor.banyo_moisture_humidity') | float(0) > 35 }}"
         id: "on"
       - trigger: template
-        value_template: "{{ states('sensor.banyo_moisture_humidity') | float(0) <= 45 }}"
+        value_template: "{{ states('sensor.banyo_moisture_humidity') | float(0) <= 35 }}"
         id: "off"
     conditions: []
     actions:
@@ -17,16 +17,15 @@ automation:
                 id:
                   - "on"
             sequence:
-              - action: switch.turn_on
+              - action: fan.turn_on
                 metadata: {}
                 data: {}
                 target:
                   entity_id: fan.banyo_fan
           - conditions: []
             sequence:
-              - action: switch.turn_off
+              - action: fan.turn_off
                 metadata: {}
                 data: {}
                 target:
                   entity_id: fan.banyo_fan
-
