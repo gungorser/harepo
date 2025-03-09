@@ -1,0 +1,40 @@
+script:
+  roomstate_toggle:
+    fields:
+      room:
+        name: Room
+        selector:
+          area:
+        description: "room to switch"
+    variables:
+      entities: >-
+        {{ (states.light|list + states.climate|list)
+        | selectattr('entity_id', 'in', area_entities(room)) 
+        | map(attribute='entity_id')
+        | list }}
+    sequence:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: >-
+                  {{ expand(states) 
+                  | selectattr('entity_id', 'in', entities) 
+                  | rejectattr('state', 'eq', 'off')
+                  | list | count > 0 }}
+            sequence:
+              - action: scene.create
+                data:
+                  scene_id: "{{ room + '_roomstate' }}"
+                  snapshot_entities: >-
+                    {{ entities }}
+              - action: climate.turn_off
+                target:
+                  area_id: "{{room}}"
+              - action: light.turn_off
+                target:
+                  area_id: "{{room}}"
+          - conditions: []
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: "{{'scene.' + room + '_roomstate' }}"
