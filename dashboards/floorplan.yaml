@@ -1,0 +1,624 @@
+views:
+  - title: GİRİŞ
+    badges: []
+    cards:
+      - type: picture-elements
+        image: local/images/floorplan/floor0/dark.png
+        elements:
+          - type: image
+            entity: light.salon_light
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor0/living.png
+              'off': local/images/floorplan/floor0/living.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+          - type: image
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+            state_image:
+              'on': local/images/floorplan/floor0/carpark.png
+              'off': local/images/floorplan/floor0/carpark.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+            entity: light.car_light
+          - type: image
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor0/hall.png
+              'off': local/images/floorplan/floor0/hall.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+            entity: light.koridor0_light
+          - type: image
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor0/dining.png
+              'off': local/images/floorplan/floor0/dining.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+            entity: light.yemek_light
+          - type: image
+            entity: light.garaj_light
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor0/garage.png
+              'off': local/images/floorplan/floor0/garage.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+          - type: image
+            entity: light.mutfak_light
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor0/kitchen.png
+              'off': local/images/floorplan/floor0/kitchen.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+          - type: image
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor0/garden.png
+              'off': local/images/floorplan/floor0/garden.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+            entity: light.bahce_light_1
+          - type: state-icon
+            style:
+              left: 76%
+              top: 46%
+            tap_action:
+              action: toggle
+            entity: light.car_light
+          - type: state-icon
+            entity: light.koridor0_light
+            style:
+              left: 47%
+              top: 49%
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+          - type: state-icon
+            style:
+              left: 25%
+              top: 65%
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+            entity: light.yemek_light
+          - type: state-icon
+            entity: light.garaj_light
+            style:
+              left: 76%
+              top: 70%
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+          - type: state-icon
+            style:
+              left: 46%
+              top: 67%
+            tap_action:
+              action: toggle
+            entity: light.mutfak_light
+            icon: mdi:lightbulb
+            hold_action:
+              action: more-info
+          - type: state-icon
+            entity: light.salon_light
+            style:
+              left: 42%
+              top: 26%
+            tap_action:
+              action: toggle
+            double_tap_action:
+              action: more-info
+            hold_action:
+              action: more-info
+          - type: state-icon
+            style:
+              left: 37%
+              top: 84%
+            tap_action:
+              action: toggle
+            entity: light.bahce_light_1
+            hold_action:
+              action: more-info
+          - type: state-icon
+            style:
+              left: 17%
+              top: 31%
+            tap_action:
+              action: more-info
+            entity: media_player.salon_tv
+          - type: state-icon
+            style:
+              left: 19%
+              top: 41%
+            double_tap_action:
+              action: more-info
+            entity: vacuum.xiaomi_c102gl_9267_robot_cleaner
+          - type: state-label
+            entity: climate.salon_climate
+            attribute: current_temperature
+            style:
+              top: 30%
+              left: 30%
+              font-size: 16px
+              color: yellow
+              font-weight: bold
+            tap_action:
+              action: more-info
+          - type: state-icon
+            entity: cover.salon_cover
+            style:
+              left: 30%
+              top: 10%
+            double_tap_action:
+              action: more-info
+            tap_action:
+              action: toggle
+          - type: state-icon
+            style:
+              left: 10%
+              top: 95%
+            entity: light.bahce_light_2
+            tap_action:
+              action: toggle
+          - type: conditional
+            title: camera.backyard off
+            conditions:
+              - condition: state
+                entity: camera.backyard
+                state_not: streaming
+            elements:
+              - type: state-icon
+                tap_action:
+                  action: perform-action
+                  perform_action: camera.turn_on
+                  target:
+                    device_id: 2c981aaa4add512f53f9b132a7ba4149
+                hold_action:
+                  action: none
+                entity: camera.backyard
+                icon: mdi:cctv-off
+                style:
+                  left: 10%
+                  top: 84%
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: camera.backyard
+                state: streaming
+            elements:
+              - type: state-icon
+                entity: camera.backyard
+                icon: mdi:cctv
+                tap_action:
+                  action: more-info
+                hold_action:
+                  action: perform-action
+                  perform_action: camera.turn_off
+                  target:
+                    device_id: 2c981aaa4add512f53f9b132a7ba4149
+                style:
+                  left: 10%
+                  top: 84%
+            title: camera.backyard on
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: camera.doorbell
+                state_not: streaming
+            title: camera.doorbell off
+            elements:
+              - type: state-icon
+                entity: camera.doorbell
+                icon: mdi:cctv-off
+                hold_action:
+                  action: none
+                tap_action:
+                  action: perform-action
+                  perform_action: camera.turn_on
+                  target:
+                    device_id: 794213408a22e95b1d0799233ef0e625
+                style:
+                  left: 63%
+                  top: 50%
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: camera.doorbell
+                state: streaming
+            title: camera.doorbell on
+            elements:
+              - type: state-icon
+                entity: camera.doorbell
+                icon: mdi:cctv
+                hold_action:
+                  action: perform-action
+                  perform_action: camera.turn_off
+                  target:
+                    device_id: 794213408a22e95b1d0799233ef0e625
+                tap_action:
+                  action: more-info
+                style:
+                  left: 63%
+                  top: 50%
+  - title: Kat1
+    path: floor-1
+    badges: []
+    cards:
+      - type: picture-elements
+        image: local/images/floorplan/floor1/dark.png
+        elements:
+          - type: image
+            entity: light.yatak_light
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor1/bedroom.png
+              'off': local/images/floorplan/floor1/bedroom.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+          - type: image
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+            state_image:
+              'on': local/images/floorplan/floor1/bathroom.png
+              'off': local/images/floorplan/floor1/bathroom.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+            entity: light.banyo_light
+          - type: image
+            entity: light.koridor1_light
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor1/hall.png
+              'off': local/images/floorplan/floor1/hall.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+          - type: image
+            entity: light.gardirop_light
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor1/closet.png
+              'off': local/images/floorplan/floor1/closet.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+          - type: image
+            entity: light.sercan_light
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor1/melike.png
+              'off': local/images/floorplan/floor1/melike.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+          - type: state-icon
+            entity: light.yatak_light
+            style:
+              left: 66%
+              top: 30%
+            tap_action:
+              action: toggle
+            double_tap_action:
+              action: more-info
+          - type: state-icon
+            entity: light.banyo_light
+            style:
+              left: 71%
+              top: 82%
+            tap_action:
+              action: toggle
+          - type: state-icon
+            entity: light.sercan_light
+            style:
+              left: 38%
+              top: 77%
+            tap_action:
+              action: toggle
+          - type: state-icon
+            entity: light.koridor1_light
+            style:
+              left: 65%
+              top: 55%
+            tap_action:
+              action: toggle
+          - type: state-icon
+            entity: light.gardirop_light
+            style:
+              left: 35%
+              top: 49%
+            tap_action:
+              action: toggle
+          - type: state-label
+            entity: climate.yatak_thermostat
+            attribute: current_temperature
+            tap_action:
+              action: more-info
+            style:
+              top: 16%
+              left: 72%
+              font-size: 16px
+              color: yellow
+              font-weight: bold
+          - type: state-label
+            entity: climate.sercan_thermostat
+            attribute: current_temperature
+            style:
+              top: 85%
+              left: 35%
+              font-size: 16px
+              color: yellow
+              font-weight: bold
+            tap_action:
+              action: more-info
+          - type: state-icon
+            entity: cover.yatak_blind_4
+            tap_action:
+              action: toggle
+            double_tap_action:
+              action: more-info
+            style:
+              left: 30%
+              top: 10%
+          - type: state-icon
+            entity: cover.yatak_blind_3
+            tap_action:
+              action: toggle
+            double_tap_action:
+              action: more-info
+            style:
+              left: 66%
+              top: 10%
+          - type: state-icon
+            entity: cover.yatak_blind_2
+            style:
+              left: 77%
+              top: 10%
+            tap_action:
+              action: toggle
+            double_tap_action:
+              action: more-info
+          - type: state-icon
+            entity: cover.yatak_blind_1
+            style:
+              left: 83%
+              top: 15%
+            tap_action:
+              action: toggle
+            double_tap_action:
+              action: more-info
+          - type: state-icon
+            entity: fan.banyo_fan
+            style:
+              left: 80%
+              top: 68%
+            tap_action:
+              action: toggle
+          - type: state-icon
+            style:
+              left: 35%
+              top: 92%
+            entity: cover.sercan_blind
+          - type: state-icon
+            entity: switch.sercan_socket
+            hold_action:
+              action: more-info
+            style:
+              left: 26%
+              top: 70%
+          - type: state-icon
+            entity: vacuum.roborock_s5_d456_robot_cleaner
+            style:
+              left: 50%
+              top: 20%
+          - type: state-icon
+            style:
+              left: 80%
+              top: 40%
+            entity: cover.yatak_blinds
+            hold_action:
+              action: more-info
+            icon: ''
+          - type: state-icon
+            entity: cover.koridor1_blind
+            style:
+              left: 82%
+              top: 56%
+            icon: mdi:blinds-horizontal-closed
+  - title: Kat2
+    path: floor-2
+    badges: []
+    cards:
+      - type: picture-elements
+        image: local/images/floorplan/floor2/dark.png
+        elements:
+          - type: image
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+            state_image:
+              'on': local/images/floorplan/floor2/attic.png
+              'off': local/images/floorplan/floor2/attic.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+            entity: light.koridor2_light
+          - type: image
+            entity: light.melike_light
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor2/visitor.png
+              'off': local/images/floorplan/floor2/visitor.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+          - type: image
+            entity: light.misafir_light
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              'on': local/images/floorplan/floor2/sercan.png
+              'off': local/images/floorplan/floor2/sercan.png
+            state_filter:
+              'on': opacity(100%)
+              'off': opacity(0%)
+          - type: state-icon
+            entity: light.koridor2_light
+            style:
+              left: 66%
+              top: 55%
+            tap_action:
+              action: toggle
+          - type: state-icon
+            entity: light.melike_light
+            style:
+              left: 24%
+              top: 55%
+            tap_action:
+              action: toggle
+          - type: state-icon
+            entity: light.misafir_light
+            style:
+              left: 47%
+              top: 35%
+            tap_action:
+              action: toggle
+          - type: state-label
+            entity: climate.misafir_thermostat
+            attribute: current_temperature
+            tap_action:
+              action: more-info
+            style:
+              top: 16%
+              left: 30%
+              font-size: 16px
+              color: yellow
+              font-weight: bold
+          - type: state-label
+            entity: climate.melike_thermostat
+            attribute: current_temperature
+            style:
+              top: 84%
+              left: 30%
+              font-size: 16px
+              color: yellow
+              font-weight: bold
+            tap_action:
+              action: more-info
+          - type: state-icon
+            entity: switch.koridor2_switch
+            style:
+              left: 77%
+              top: 66%
+            tap_action:
+              action: none
+            hold_action:
+              action: more-info
+          - type: state-icon
+            style:
+              left: 50%
+              top: 15%
+            entity: cover.misafir_cover
+            tap_action:
+              action: toggle
+          - type: state-label
+            tap_action:
+              action: more-info
+            style:
+              top: 65%
+              left: 85%
+              font-size: 16px
+              color: yellow
+              font-weight: bold
+            entity: sensor.boiler_curburnpow
+          - type: state-icon
+            style:
+              left: 35%
+              top: 44%
+            entity: light.tavan_light_2
+            hold_action:
+              action: more-info
+            tap_action:
+              action: toggle

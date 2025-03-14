@@ -1,0 +1,106 @@
+views:
+  - title: Rooms
+    type: sections
+    sections:
+      - type: grid
+        cards:
+          - type: heading
+            heading: Gereksizse Söndür
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            layout_options:
+              grid_columns: 1
+              grid_rows: 2
+            name: Melike
+            entity: input_boolean.melike_roomstate
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            entity: input_boolean.misafir_roomstate
+            layout_options:
+              grid_columns: 1
+              grid_rows: 2
+            name: Misafir
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            layout_options:
+              grid_columns: 1
+              grid_rows: 2
+            entity: input_boolean.koridor_roomstate
+            name: Koridor
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            layout_options:
+              grid_columns: 1
+              grid_rows: 2
+            name: Bahce
+            entity: input_boolean.bahce_roomstate
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            layout_options:
+              grid_columns: 1
+              grid_rows: 2
+            entity: input_boolean.sercan_roomstate
+            name: Sercan
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            layout_options:
+              grid_columns: 1
+              grid_rows: 2
+            entity: input_boolean.yatak_roomstate
+            name: Yatak
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            layout_options:
+              grid_columns: 1
+              grid_rows: 2
+            entity: input_boolean.salon_roomstate
+            name: Salon
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            layout_options:
+              grid_columns: 1
+              grid_rows: 2
+            entity: input_boolean.banyo_roomstate
+            name: Banyo
+          - show_name: true
+            show_icon: true
+            type: button
+            tap_action:
+              action: toggle
+            layout_options:
+              grid_columns: 4
+              grid_rows: 2
+            entity: input_boolean.roomstate
+            name: Tüm Ev
+    badges: []
+  - title: Kamera
+    path: kamera
+    cards:
+      - type: custom:webrtc-camera
+        entity: camera.backyard
+      - type: custom:webrtc-camera
+        entity: camera.doorbell

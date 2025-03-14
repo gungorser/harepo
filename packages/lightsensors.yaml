@@ -23,5 +23,5 @@ automation:
     use_blueprint:
       path: gungorser/light_with_sensor.yaml
       input:
-        light: light.koridor1_light
-        sensor: binary_sensor.koridor1_sensor_occupancy
+        light: light.koridor2_light
+        sensor: binary_sensor.koridor2_sensor_occupancy

@@ -12,6 +12,7 @@ script:
         | selectattr('entity_id', 'in', area_entities(room)) 
         | map(attribute='entity_id')
         | list }}
+      scene_id: "{{ room + '_roomstate' }}"
     sequence:
       - choose:
           - conditions:
@@ -24,7 +25,7 @@ script:
             sequence:
               - action: scene.create
                 data:
-                  scene_id: "{{ room + '_roomstate' }}"
+                  scene_id: "{{ scene_id }}"
                   snapshot_entities: >-
                     {{ entities }}
               - action: climate.turn_off
@@ -37,4 +38,38 @@ script:
             sequence:
               - action: scene.turn_on
                 target:
-                  entity_id: "{{'scene.' + room + '_roomstate' }}"
+                  entity_id: "{{'scene.' + scene_id }}"
+  housestate_toggle:
+    variables:
+      entities: >-
+        {{ (states.light|list + states.climate|list)
+        | map(attribute='entity_id')
+        | list }}
+      scene_id: "housestate"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: >-
+                  {{ expand(states) 
+                  | selectattr('entity_id', 'in', entities) 
+                  | rejectattr('state', 'eq', 'off')
+                  | list | count > 0 }}
+            sequence:
+              - action: scene.create
+                data:
+                  scene_id: "{{ scene_id }}"
+                  snapshot_entities: >-
+                    {{ entities }}
+              - action: climate.turn_off
+                target:
+                  area_id: "{{room}}"
+              - action: light.turn_off
+                target:
+                  area_id: "{{room}}"
+          - conditions: []
+            sequence:
+              - action: scene.turn_on
+                target:
+                  entity_id: "{{'scene.' + scene_id }}"
+

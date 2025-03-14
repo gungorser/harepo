@@ -1,0 +1,106 @@
+views:
+  - title: Heating
+    badges: []
+    cards:
+      - type: custom:scheduler-card
+        include:
+          - climate
+        exclude: []
+        tags:
+          - haftaici
+        title: Haftaici
+        display_options:
+          primary_info: default
+          secondary_info: []
+          icon: action
+        sort_by:
+          - title
+          - state
+      - type: custom:scheduler-card
+        include:
+          - climate
+        exclude: []
+        title: Haftasonu
+        tags:
+          - haftasonu
+        display_options:
+          primary_info: default
+          secondary_info: []
+          icon: action
+        sort_by:
+          - state
+          - title
+      - type: custom:scheduler-card
+        tags:
+          - hergun
+        include:
+          - climate
+        exclude: []
+        title: Günlük
+    icon: mdi:radiator
+  - title: Perdeler
+    path: covers
+    badges: []
+    cards:
+      - type: custom:scheduler-card
+        include:
+          - cover
+        exclude: []
+        tags:
+          - hergun
+        display_options:
+          primary_info: default
+          secondary_info: []
+          icon: action
+        title: Günlük
+      - type: custom:scheduler-card
+        include:
+          - cover
+        exclude: []
+        title: Haftaici
+        tags:
+          - haftaici
+        display_options:
+          primary_info: default
+          secondary_info: []
+          icon: action
+        show_header_toggle: false
+        time_step: 10
+      - type: custom:scheduler-card
+        include:
+          - cover
+        exclude: []
+        title: Haftasonu
+        tags:
+          - haftasonu
+        display_options:
+          primary_info: default
+          secondary_info: []
+          icon: action
+    icon: mdi:curtains
+  - icon: mdi:robot-vacuum
+    path: ''
+    cards:
+      - type: custom:scheduler-card
+        include:
+          - automation
+          - vacuum
+        exclude: []
+        display_options:
+          primary_info: default
+          secondary_info: []
+          icon: action
+        tags:
+          - cleaning
+        title: Temizlik
+  - icon: mdi:lightbulb-group
+    path: ''
+    cards:
+      - type: custom:scheduler-card
+        include:
+          - automation
+          - light
+        exclude: []
+        title: Işıklar
+        tags:
+          - lightning
