@@ -48,18 +48,6 @@ automation:
         button2: none
         button3: none
 
-  - id: "gardirop_pushbutton"
-    alias: gardirop_pushbutton
-    description: ""
-    use_blueprint:
-      path: gungorser/pushbutton.yaml
-      input:
-        room: gardirop
-        device: 645fdd8ff68dd5824c305ae84447042a
-        button1: light
-        button2: none
-        button3: none
-
   - id: "garaj_pushbutton"
     alias: garaj_pushbutton
     description: ""
@@ -67,9 +55,21 @@ automation:
       path: gungorser/pushbutton.yaml
       input:
         room: garaj
-        device: d194e781625697f06ff6a067a2b297ac
+        device: 645fdd8ff68dd5824c305ae84447042a
         button1: light
         button2: none
+        button3: none
+
+  - id: "bebek_pushbutton"
+    alias: bebek_pushbutton
+    description: ""
+    use_blueprint:
+      path: gungorser/pushbutton.yaml
+      input:
+        room: bebek
+        device: d194e781625697f06ff6a067a2b297ac
+        button1: cover
+        button2: light
         button3: none
 
   - id: "sercan_pushbutton"

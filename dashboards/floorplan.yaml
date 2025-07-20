@@ -3,7 +3,7 @@ views:
     badges: []
     cards:
       - type: picture-elements
-        image: local/images/floorplan/floor0/dark.png
+        image: local/images/floorplan/kat0/dark.png
         elements:
           - type: image
             entity: light.salon_light
@@ -14,11 +14,11 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor0/living.png
-              'off': local/images/floorplan/floor0/living.png
+              "on": local/images/floorplan/kat0/salon_light.png
+              "off": local/images/floorplan/kat0/salon_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(50%)
           - type: image
             style:
               left: 50%
@@ -26,11 +26,11 @@ views:
               width: 100%
               mix-blend-mode: screen
             state_image:
-              'on': local/images/floorplan/floor0/carpark.png
-              'off': local/images/floorplan/floor0/carpark.png
+              "on": local/images/floorplan/kat0/car_light.png
+              "off": local/images/floorplan/kat0/car_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
             entity: light.car_light
           - type: image
             style:
@@ -40,11 +40,11 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor0/hall.png
-              'off': local/images/floorplan/floor0/hall.png
+              "on": local/images/floorplan/kat0/koridor0_light.png
+              "off": local/images/floorplan/kat0/koridor0_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
             entity: light.koridor0_light
           - type: image
             style:
@@ -54,11 +54,11 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor0/dining.png
-              'off': local/images/floorplan/floor0/dining.png
+              "on": local/images/floorplan/kat0/yemek_light.png
+              "off": local/images/floorplan/kat0/yemek_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
             entity: light.yemek_light
           - type: image
             entity: light.garaj_light
@@ -69,11 +69,11 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor0/garage.png
-              'off': local/images/floorplan/floor0/garage.png
+              "on": local/images/floorplan/kat0/garaj_light.png
+              "off": local/images/floorplan/kat0/garaj_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
           - type: image
             entity: light.mutfak_light
             style:
@@ -83,11 +83,11 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor0/kitchen.png
-              'off': local/images/floorplan/floor0/kitchen.png
+              "on": local/images/floorplan/kat0/mutfak_light.png
+              "off": local/images/floorplan/kat0/mutfak_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
           - type: image
             style:
               left: 50%
@@ -96,11 +96,11 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor0/garden.png
-              'off': local/images/floorplan/floor0/garden.png
+              "on": local/images/floorplan/kat0/bahce_light.png
+              "off": local/images/floorplan/kat0/bahce_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
             entity: light.bahce_light_1
           - type: state-icon
             style:
@@ -292,7 +292,7 @@ views:
     badges: []
     cards:
       - type: picture-elements
-        image: local/images/floorplan/floor1/dark.png
+        image: local/images/floorplan/kat1/dark.png
         elements:
           - type: image
             entity: light.yatak_light
@@ -303,11 +303,11 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor1/bedroom.png
-              'off': local/images/floorplan/floor1/bedroom.png
+              "on": local/images/floorplan/kat1/yatak_light.png
+              "off": local/images/floorplan/kat1/yatak_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
           - type: image
             style:
               left: 50%
@@ -315,11 +315,11 @@ views:
               width: 100%
               mix-blend-mode: screen
             state_image:
-              'on': local/images/floorplan/floor1/bathroom.png
-              'off': local/images/floorplan/floor1/bathroom.png
+              "on": local/images/floorplan/kat1/banyo_light.png
+              "off": local/images/floorplan/kat1/banyo_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(15%)
             entity: light.banyo_light
           - type: image
             entity: light.koridor1_light
@@ -330,11 +330,11 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor1/hall.png
-              'off': local/images/floorplan/floor1/hall.png
+              "on": local/images/floorplan/kat1/koridor1_light.png
+              "off": local/images/floorplan/kat1/koridor1_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
           - type: image
             entity: light.gardirop_light
             style:
@@ -344,11 +344,11 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor1/closet.png
-              'off': local/images/floorplan/floor1/closet.png
+              "on": local/images/floorplan/kat1/bebek_light.png
+              "off": local/images/floorplan/kat1/bebek_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
           - type: image
             entity: light.sercan_light
             style:
@@ -358,11 +358,11 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor1/melike.png
-              'off': local/images/floorplan/floor1/melike.png
+              "on": local/images/floorplan/kat1/sercan_light.png
+              "off": local/images/floorplan/kat1/sercan_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
           - type: state-icon
             entity: light.yatak_light
             style:
@@ -422,6 +422,16 @@ views:
               font-weight: bold
             tap_action:
               action: more-info
+          - type: state-label
+            entity: sensor.banyo_moisture_humidity
+            style:
+              top: 80%
+              left: 55%
+              font-size: 16px
+              color: blue
+              font-weight: bold
+            tap_action:
+              action: more-info
           - type: state-icon
             entity: cover.yatak_blind_4
             tap_action:
@@ -471,25 +481,10 @@ views:
               top: 92%
             entity: cover.sercan_blind
           - type: state-icon
-            entity: switch.sercan_socket
-            hold_action:
-              action: more-info
-            style:
-              left: 26%
-              top: 70%
-          - type: state-icon
             entity: vacuum.roborock_s5_d456_robot_cleaner
             style:
               left: 50%
               top: 20%
-          - type: state-icon
-            style:
-              left: 80%
-              top: 40%
-            entity: cover.yatak_blinds
-            hold_action:
-              action: more-info
-            icon: ''
           - type: state-icon
             entity: cover.koridor1_blind
             style:
@@ -501,7 +496,7 @@ views:
     badges: []
     cards:
       - type: picture-elements
-        image: local/images/floorplan/floor2/dark.png
+        image: local/images/floorplan/kat2/dark.png
         elements:
           - type: image
             style:
@@ -510,11 +505,11 @@ views:
               width: 100%
               mix-blend-mode: screen
             state_image:
-              'on': local/images/floorplan/floor2/attic.png
-              'off': local/images/floorplan/floor2/attic.png
+              "on": local/images/floorplan/kat2/koridor2_light.png
+              "off": local/images/floorplan/kat2/koridor2_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(15%)
             entity: light.koridor2_light
           - type: image
             entity: light.melike_light
@@ -525,11 +520,11 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor2/visitor.png
-              'off': local/images/floorplan/floor2/visitor.png
+              "on": local/images/floorplan/kat2/melike_light.png
+              "off": local/images/floorplan/kat2/melike_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
           - type: image
             entity: light.misafir_light
             style:
@@ -539,11 +534,25 @@ views:
               mix-blend-mode: screen
               opacity: 50%
             state_image:
-              'on': local/images/floorplan/floor2/sercan.png
-              'off': local/images/floorplan/floor2/sercan.png
+              "on": local/images/floorplan/kat2/misafir_light.png
+              "off": local/images/floorplan/kat2/misafir_light.png
             state_filter:
-              'on': opacity(100%)
-              'off': opacity(0%)
+              "on": opacity(100%)
+              "off": opacity(30%)
+          - type: image
+            entity: light.tavan_light_2
+            style:
+              left: 50%
+              top: 50%
+              width: 100%
+              mix-blend-mode: screen
+              opacity: 50%
+            state_image:
+              "on": local/images/floorplan/kat2/tavan_light.png
+              "off": local/images/floorplan/kat2/tavan_light.png
+            state_filter:
+              "on": opacity(100%)
+              "off": opacity(30%)
           - type: state-icon
             entity: light.koridor2_light
             style:

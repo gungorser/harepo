@@ -4,10 +4,10 @@ automation:
     mode: single
     triggers:
       - trigger: template
-        value_template: "{{ states('sensor.banyo_moisture_humidity') | float(0) > 35 }}"
+        value_template: "{{ states('sensor.banyo_moisture_humidity') | float(0) > 45 }}"
         id: "on"
       - trigger: template
-        value_template: "{{ states('sensor.banyo_moisture_humidity') | float(0) <= 35 }}"
+        value_template: "{{ states('sensor.banyo_moisture_humidity') | float(0) <= 45 }}"
         id: "off"
     conditions: []
     actions:

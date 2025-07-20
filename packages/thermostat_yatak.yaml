@@ -130,9 +130,9 @@ climate:
     target_temp: 19
     keep_alive:
       seconds: 60
-    kp: 80
-    ki: 0.01
-    kd: 2000 
+    kp: 20
+    ki: 0.015
+    kd: 10
     min_cycle_duration: 10
     pwm: 0
     min_temp: 4
