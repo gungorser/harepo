@@ -104,16 +104,16 @@ views:
             entity: light.bahce_light_1
           - type: state-icon
             style:
-              left: 76%
-              top: 46%
+              left: 72%
+              top: 50%
             tap_action:
               action: toggle
             entity: light.car_light
           - type: state-icon
             entity: light.koridor0_light
             style:
-              left: 47%
-              top: 49%
+              left: 46%
+              top: 52%
             tap_action:
               action: toggle
             hold_action:
@@ -121,7 +121,7 @@ views:
           - type: state-icon
             style:
               left: 25%
-              top: 65%
+              top: 70%
             tap_action:
               action: toggle
             hold_action:
@@ -130,8 +130,8 @@ views:
           - type: state-icon
             entity: light.garaj_light
             style:
-              left: 76%
-              top: 70%
+              left: 73%
+              top: 76%
             tap_action:
               action: toggle
             hold_action:
@@ -139,7 +139,7 @@ views:
           - type: state-icon
             style:
               left: 46%
-              top: 67%
+              top: 72%
             tap_action:
               action: toggle
             entity: light.mutfak_light
@@ -150,7 +150,7 @@ views:
             entity: light.salon_light
             style:
               left: 42%
-              top: 26%
+              top: 34%
             tap_action:
               action: toggle
             double_tap_action:
@@ -168,15 +168,15 @@ views:
               action: more-info
           - type: state-icon
             style:
-              left: 17%
-              top: 31%
+              left: 20%
+              top: 37%
             tap_action:
               action: more-info
             entity: media_player.salon_tv
           - type: state-icon
             style:
-              left: 19%
-              top: 41%
+              left: 21%
+              top: 44%
             double_tap_action:
               action: more-info
             entity: vacuum.xiaomi_c102gl_9267_robot_cleaner
@@ -184,8 +184,8 @@ views:
             entity: climate.salon_climate
             attribute: current_temperature
             style:
-              top: 30%
-              left: 30%
+              top: 44%
+              left: 44%
               font-size: 16px
               color: yellow
               font-weight: bold
@@ -195,7 +195,7 @@ views:
             entity: cover.salon_cover
             style:
               left: 30%
-              top: 10%
+              top: 18%
             double_tap_action:
               action: more-info
             tap_action:
