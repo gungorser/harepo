@@ -367,7 +367,7 @@ views:
             entity: light.yatak_light
             style:
               left: 66%
-              top: 30%
+              top: 36%
             tap_action:
               action: toggle
             double_tap_action:
@@ -375,29 +375,29 @@ views:
           - type: state-icon
             entity: light.banyo_light
             style:
-              left: 71%
-              top: 82%
+              left: 68%
+              top: 81%
             tap_action:
               action: toggle
           - type: state-icon
             entity: light.sercan_light
             style:
-              left: 38%
-              top: 77%
+              left: 33%
+              top: 76%
             tap_action:
               action: toggle
           - type: state-icon
             entity: light.koridor1_light
             style:
-              left: 65%
-              top: 55%
+              left: 63%
+              top: 61%
             tap_action:
               action: toggle
           - type: state-icon
             entity: light.gardirop_light
             style:
-              left: 35%
-              top: 49%
+              left: 33%
+              top: 40%
             tap_action:
               action: toggle
           - type: state-label
@@ -406,8 +406,8 @@ views:
             tap_action:
               action: more-info
             style:
-              top: 25%
-              left: 72%
+              top: 27%
+              left: 70%
               font-size: 16px
               color: yellow
               font-weight: bold
@@ -417,7 +417,7 @@ views:
             tap_action:
               action: more-info
             style:
-              top: 25%
+              top: 27%
               left: 30%
               font-size: 16px
               color: yellow
@@ -426,7 +426,7 @@ views:
             entity: climate.sercan_thermostat
             attribute: current_temperature
             style:
-              top: 85%
+              top: 82%
               left: 35%
               font-size: 16px
               color: yellow
@@ -451,30 +451,21 @@ views:
               action: more-info
             style:
               left: 30%
-              top: 10%
+              top: 21%
           - type: state-icon
-            entity: cover.yatak_blind_3
+            entity: cover.yatak_cover
             tap_action:
               action: toggle
             double_tap_action:
               action: more-info
             style:
               left: 66%
-              top: 10%
+              top: 21%
           - type: state-icon
             entity: cover.yatak_blind_2
             style:
-              left: 77%
-              top: 10%
-            tap_action:
-              action: toggle
-            double_tap_action:
-              action: more-info
-          - type: state-icon
-            entity: cover.yatak_blind_1
-            style:
-              left: 83%
-              top: 15%
+              left: 79%
+              top: 27%
             tap_action:
               action: toggle
             double_tap_action:
@@ -483,24 +474,24 @@ views:
             entity: fan.banyo_fan
             style:
               left: 80%
-              top: 68%
+              top: 74%
             tap_action:
               action: toggle
           - type: state-icon
             style:
-              left: 35%
-              top: 92%
+              left: 32%
+              top: 90%
             entity: cover.sercan_blind
           - type: state-icon
             entity: vacuum.roborock_s5_d456_robot_cleaner
             style:
-              left: 50%
-              top: 20%
+              top: 81%
+              left: 26%
           - type: state-icon
             entity: cover.koridor1_blind
             style:
-              left: 82%
-              top: 56%
+              left: 81%
+              top: 62%
             icon: mdi:blinds-horizontal-closed
   - title: Kat2
     path: floor-2
@@ -591,8 +582,8 @@ views:
             tap_action:
               action: more-info
             style:
-              top: 16%
-              left: 30%
+              top: 25%
+              left: 35%
               font-size: 16px
               color: yellow
               font-weight: bold
@@ -600,8 +591,8 @@ views:
             entity: climate.melike_thermostat
             attribute: current_temperature
             style:
-              top: 84%
-              left: 30%
+              top: 74%
+              left: 31%
               font-size: 16px
               color: yellow
               font-weight: bold
