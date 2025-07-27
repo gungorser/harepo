@@ -122,3 +122,4 @@ action:
               entity_id: !input thermostat
             data:
               temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
+mode: queued
