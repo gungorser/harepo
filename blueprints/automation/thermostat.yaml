@@ -103,7 +103,7 @@ action:
             value_template: >
               {{ trigger.to_state.context.user_id is not none }}
         sequence:
-          - action: climate.set_hvac_mode
+          - action: climate.set_temperature
             metadata: {}
             target:
               entity_id: !input valve
@@ -116,7 +116,7 @@ action:
             value_template: >
               {{ trigger.to_state.context.user_id is none }}
         sequence:
-          - action: climate.set_hvac_mode
+          - action: climate.set_temperature
             metadata: {}
             target:
               entity_id: !input thermostat
