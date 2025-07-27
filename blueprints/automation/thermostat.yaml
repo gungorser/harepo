@@ -1,0 +1,124 @@
+blueprint:
+  name: Thermostat Automation
+  description: Automation of thermostat
+  domain: automation
+  input:
+    pidvalue:
+      name: PID Value
+      description: PID value of the virtual thermostat
+      selector:
+        entity:
+          domain: input_number
+    valve_opening:
+      name: Valve Value Opening
+      description: physical state of sonoff trv valve
+      selector:
+        entity:
+          domain: number
+    valve_closing:
+      name: Valve Value Closing
+      description: physical state of sonoff trv valve
+      selector:
+        entity:
+          domain: number
+    valve:
+      name: Climate entity
+      description: physical climate entity
+      selector:
+        entity:
+          domain: climate
+    thermostat:
+      name: thermostat
+      description: Virtual thermostat entity
+      selector:
+        entity:
+          domain: climate
+alias: Thermostat automation
+description: ""
+trigger:
+  - platform: state
+    entity_id: !input pidvalue
+    id: pidchange
+  - platform: state
+    entity_id: !input valve
+    id: state_sync_physical
+  - platform: state
+    entity_id: !input thermostat
+    id: state_sync_automation
+  - platform: state
+    entity_id: !input valve
+    id: attr_sync_physical
+    attribute: temperature
+  - platform: state
+    entity_id: !input thermostat
+    id: attr_sync_automation
+    attribute: temperature
+condition: []
+action:
+  - choose:
+    - conditions:
+        - condition: trigger
+          id: pidchange
+      sequence:
+        - action: number.set_value
+          target:
+            entity_id: !input valve_opening
+          data:
+            value: "{{ trigger.to_state.state | int }}"
+        - action: number.set_value
+          target:
+            entity_id: !input valve_closing
+          data:
+            value: "{{ 100 - (trigger.to_state.state | int) }}"
+    - conditions:
+        - condition: trigger
+          id: state_sync_automation
+        - condition: template
+          value_template: >
+            {{ trigger.from_state.context.user_id is not none }}
+      sequence:
+        - action: climate.set_hvac_mode
+          metadata: {}
+          target:
+            entity_id: !input valve
+          data:
+            hvac_mode: "{{states(trigger.entity_id)}}"
+    - conditions:
+        - condition: trigger
+          id: state_sync_physical
+        - condition: template
+          value_template: >
+            {{ trigger.from_state.context.user_id is none }}
+      sequence:
+        - action: climate.set_hvac_mode
+          metadata: {}
+          target:
+            entity_id: !input thermostat
+          data:
+            hvac_mode: "{{states(trigger.entity_id)}}"
+    - conditions:
+        - condition: trigger
+          id: attr_sync_automation
+        - condition: template
+          value_template: >
+            {{ trigger.from_state.context.user_id is not none }}
+      sequence:
+        - action: climate.set_hvac_mode
+          metadata: {}
+          target:
+            entity_id: !input valve
+          data:
+            temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
+    - conditions:
+        - condition: trigger
+          id: state_sync_physical
+        - condition: template
+          value_template: >
+            {{ trigger.from_state.context.user_id is none }}
+      sequence:
+        - action: climate.set_hvac_mode
+          metadata: {}
+          target:
+            entity_id: !input thermostat
+          data:
+            temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
