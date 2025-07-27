@@ -56,69 +56,69 @@ trigger:
 condition: []
 action:
   - choose:
-    - conditions:
-        - condition: trigger
-          id: pidchange
-      sequence:
-        - action: number.set_value
-          target:
-            entity_id: !input valve_opening
-          data:
-            value: "{{ trigger.to_state.state | int }}"
-        - action: number.set_value
-          target:
-            entity_id: !input valve_closing
-          data:
-            value: "{{ 100 - (trigger.to_state.state | int) }}"
-    - conditions:
-        - condition: trigger
-          id: state_sync_automation
-        - condition: template
-          value_template: >
-            {{ trigger.from_state.context.user_id is not none }}
-      sequence:
-        - action: climate.set_hvac_mode
-          metadata: {}
-          target:
-            entity_id: !input valve
-          data:
-            hvac_mode: "{{states(trigger.entity_id)}}"
-    - conditions:
-        - condition: trigger
-          id: state_sync_physical
-        - condition: template
-          value_template: >
-            {{ trigger.from_state.context.user_id is none }}
-      sequence:
-        - action: climate.set_hvac_mode
-          metadata: {}
-          target:
-            entity_id: !input thermostat
-          data:
-            hvac_mode: "{{states(trigger.entity_id)}}"
-    - conditions:
-        - condition: trigger
-          id: attr_sync_automation
-        - condition: template
-          value_template: >
-            {{ trigger.from_state.context.user_id is not none }}
-      sequence:
-        - action: climate.set_hvac_mode
-          metadata: {}
-          target:
-            entity_id: !input valve
-          data:
-            temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
-    - conditions:
-        - condition: trigger
-          id: state_sync_physical
-        - condition: template
-          value_template: >
-            {{ trigger.from_state.context.user_id is none }}
-      sequence:
-        - action: climate.set_hvac_mode
-          metadata: {}
-          target:
-            entity_id: !input thermostat
-          data:
-            temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
+      - conditions:
+          - condition: trigger
+            id: pidchange
+        sequence:
+          - action: number.set_value
+            target:
+              entity_id: !input valve_opening
+            data:
+              value: "{{ trigger.to_state.state | int }}"
+          - action: number.set_value
+            target:
+              entity_id: !input valve_closing
+            data:
+              value: "{{ 100 - (trigger.to_state.state | int) }}"
+      - conditions:
+          - condition: trigger
+            id: state_sync_automation
+          - condition: template
+            value_template: >
+              {{ trigger.to_state.context.user_id is not none }}
+        sequence:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            target:
+              entity_id: !input valve
+            data:
+              hvac_mode: "{{states(trigger.entity_id)}}"
+      - conditions:
+          - condition: trigger
+            id: state_sync_physical
+          - condition: template
+            value_template: >
+              {{ trigger.to_state.context.user_id is none }}
+        sequence:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            target:
+              entity_id: !input thermostat
+            data:
+              hvac_mode: "{{states(trigger.entity_id)}}"
+      - conditions:
+          - condition: trigger
+            id: attr_sync_automation
+          - condition: template
+            value_template: >
+              {{ trigger.to_state.context.user_id is not none }}
+        sequence:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            target:
+              entity_id: !input valve
+            data:
+              temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
+      - conditions:
+          - condition: trigger
+            id: attr_sync_physical
+          - condition: template
+            value_template: >
+              {{ trigger.to_state.context.user_id is none }}
+        sequence:
+          - action: climate.set_hvac_mode
+            metadata: {}
+            target:
+              entity_id: !input thermostat
+            data:
+              temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
