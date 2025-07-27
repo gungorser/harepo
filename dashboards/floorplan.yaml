@@ -609,8 +609,8 @@ views:
               action: more-info
           - type: state-icon
             style:
-              left: 50%
-              top: 15%
+              top: 18%
+              left: 35%
             entity: cover.misafir_cover
             tap_action:
               action: toggle
@@ -626,8 +626,8 @@ views:
             entity: sensor.boiler_curburnpow
           - type: state-icon
             style:
-              left: 35%
-              top: 44%
+              left: 32%
+              top: 47%
             entity: light.tavan_light_2
             hold_action:
               action: more-info
