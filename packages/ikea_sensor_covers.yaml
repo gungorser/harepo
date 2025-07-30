@@ -1,0 +1,100 @@
+cover:
+  - platform: template
+    covers:
+      sercan_cover:
+        device_class: blind
+        friendly_name: "sercan cover"
+        unique_id: sercan_cover
+        position_template: "{{ state_attr('cover.sercan_blind', 'current_position') | int }}"
+        open_cover:
+          action: cover.open_cover
+          entity_id: "cover.sercan_blind"
+        close_cover:
+          choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.sercan_window_contact
+                  state: "off"
+              sequence:
+                - service: cover.close_cover
+                  entity_id: "cover.sercan_blind"
+        stop_cover:
+          action: cover.stop_cover
+          entity_id: "cover.sercan_blind"
+        set_cover_position:
+          choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.sercan_window_contact
+                  state: "off"
+              sequence:
+                - service: cover.set_cover_position
+                  data:
+                    entity_id: "cover.sercan_blind"
+                    position: "{{ position }}"
+  - platform: template
+    covers:
+      yatak_cover:
+        device_class: blind
+        friendly_name: "yatak cover"
+        unique_id: yatak_cover
+        position_template: "{{ state_attr('cover.yatak_blind_2', 'current_position') | int }}"
+        open_cover:
+          action: cover.open_cover
+          entity_id: "cover.yatak_blind_2"
+        close_cover:
+          choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.yatak_window_contact
+                  state: "off"
+              sequence:
+                - service: cover.close_cover
+                  entity_id: "cover.yatak_blind_2"
+        stop_cover:
+          action: cover.stop_cover
+          entity_id: "cover.yatak_blind_2"
+        set_cover_position:
+          choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.yatak_window_contact
+                  state: "off"
+              sequence:
+                - service: cover.set_cover_position
+                  data:
+                    entity_id: "cover.yatak_blind_2"
+                    position: "{{ position }}"
+  - platform: template
+    covers:
+      bebek_cover:
+        device_class: blind
+        friendly_name: "bebek cover"
+        unique_id: bebek_cover
+        position_template: "{{ state_attr('cover.yatak_blind_4', 'current_position') | int }}"
+        open_cover:
+          action: cover.open_cover
+          entity_id: "cover.yatak_blind_4"
+        close_cover:
+          choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.bebek_window_contact
+                  state: "off"
+              sequence:
+                - service: cover.close_cover
+                  entity_id: "cover.yatak_blind_4"
+        stop_cover:
+          action: cover.stop_cover
+          entity_id: "cover.yatak_blind_4"
+        set_cover_position:
+          choose:
+            - conditions:
+                - condition: state
+                  entity_id: binary_sensor.bebek_window_contact
+                  state: "off"
+              sequence:
+                - service: cover.set_cover_position
+                  data:
+                    entity_id: "cover.yatak_blind_4"
+                    position: "{{ position }}"

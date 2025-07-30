@@ -444,7 +444,7 @@ views:
             tap_action:
               action: more-info
           - type: state-icon
-            entity: cover.yatak_blind_4
+            entity: cover.bebek_cover
             tap_action:
               action: toggle
             double_tap_action:
@@ -462,7 +462,7 @@ views:
               left: 66%
               top: 21%
           - type: state-icon
-            entity: cover.yatak_blind_2
+            entity: cover.yatak_cover
             style:
               left: 79%
               top: 27%
@@ -481,7 +481,7 @@ views:
             style:
               left: 32%
               top: 90%
-            entity: cover.sercan_blind
+            entity: cover.sercan_cover
           - type: state-icon
             entity: vacuum.roborock_s5_d456_robot_cleaner
             style:
