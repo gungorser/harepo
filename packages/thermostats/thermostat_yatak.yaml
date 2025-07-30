@@ -1,0 +1,46 @@
+template:
+  - sensor:
+      - name: yatak_thermostat
+        unique_id: yatak_thermostat
+        unit_of_measurement: "°C"
+        state: "{{ state_attr('climate.yatak_climate', 'current_temperature') }}"
+        availability: "{{ states('climate.yatak_climate') != 'unavailable' }}"
+        device_class: temperature
+
+input_number:
+  yatak_thermostat:
+    name: yatak_thermostat
+    initial: 0
+    min: 0
+    max: 100
+    step: 1
+
+
+climate:
+  - platform: smart_thermostat
+    name: yatak_thermostat
+    unique_id: yatak_thermostat
+    heater: input_number.yatak_thermostat
+    target_sensor: sensor.yatak_thermostat
+    target_temp: 19
+    keep_alive:
+      seconds: 60
+    kp: 20
+    ki: 0.015
+    kd: 10
+    min_cycle_duration: 10
+    pwm: 0
+    min_temp: 4
+    max_temp: 35
+
+automation:
+  - alias: "yatak thermostat automation"
+    id: "yatak_thermostat_automation"
+    use_blueprint:
+      path: gungorser/thermostat.yaml
+      input:
+        pidvalue: input_number.yatak_thermostat
+        valve_opening: number.yatak_climate_valve_opening_degree
+        valve_closing: number.yatak_climate_valve_closing_degree
+        valve: climate.yatak_climate
+        thermostat: climate.yatak_thermostat

@@ -1,22 +1,32 @@
+homeassistant:
+  packages: !include_dir_named gungors/packages/thermostats
+
 automation:
   - alias: "thermostat_switch"
     id: "thermostat_switch"
     description: ""
     triggers:
       - value_template: |-
-          {{ expand(states.climate) 
-          | selectattr('entity_id', 'match', 'climate.*_thermostat') 
-          | map(attribute='state') 
-          | select('match', 'heat')
-          | list | count>0 }}
+          {{ ['number.sercan_climate_valve_opening_degree',
+              'number.yatak_climate_valve_opening_degree',
+              'number.melike_climate_valve_opening_degree',
+              'number.bebek_climate_valve_opening_degree',
+              'number.misafir_climate_valve_opening_degree'] 
+            | map('states')  
+            | select('is_number')
+            | map('float') | max > 0 }}
         trigger: template
         id: heat
       - value_template: |-
-          {{ expand(states.climate) 
-          | selectattr('entity_id', 'match', 'climate.*_thermostat') 
-          | map(attribute='state') 
-          | select('match', 'heat')
-          | list | count==0 }}
+          {{ ['number.sercan_climate_valve_opening_degree',
+              'number.yatak_climate_valve_opening_degree',
+              'number.melike_climate_valve_opening_degree',
+              'number.bebek_climate_valve_opening_degree',
+              'number.misafir_climate_valve_opening_degree'] 
+            | map('states') 
+            | select('is_number')
+            | map('float') 
+            | max == 0 }}
         trigger: template
         id: "off"
     conditions: []
