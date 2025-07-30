@@ -558,15 +558,15 @@ views:
           - type: state-icon
             entity: light.koridor2_light
             style:
-              left: 66%
+              left: 63%
               top: 55%
             tap_action:
               action: toggle
           - type: state-icon
             entity: light.melike_light
             style:
-              left: 24%
-              top: 55%
+              left: 27%
+              top: 61%
             tap_action:
               action: toggle
           - type: state-icon
