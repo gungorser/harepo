@@ -34,10 +34,10 @@ cover:
                     position: "{{ position }}"
   - platform: template
     covers:
-      yatak_cover:
+      yatak_cover_window:
         device_class: blind
         friendly_name: "yatak cover"
-        unique_id: yatak_cover
+        unique_id: yatak_cover_window
         position_template: "{{ state_attr('cover.yatak_blind_2', 'current_position') | int }}"
         open_cover:
           action: cover.open_cover
@@ -98,3 +98,10 @@ cover:
                   data:
                     entity_id: "cover.yatak_blind_4"
                     position: "{{ position }}"
+  - platform: group
+    name: Yatak cover
+    unique_id: yatak_cover
+    entities:
+      - cover.yatak_cover_window
+      - cover.yatak_blind_1
+      - cover.yatak_blind_3
