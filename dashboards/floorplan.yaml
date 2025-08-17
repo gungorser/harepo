@@ -462,15 +462,6 @@ views:
               left: 66%
               top: 21%
           - type: state-icon
-            entity: cover.yatak_cover
-            style:
-              left: 79%
-              top: 27%
-            tap_action:
-              action: toggle
-            double_tap_action:
-              action: more-info
-          - type: state-icon
             entity: fan.banyo_fan
             style:
               left: 80%
