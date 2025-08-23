@@ -1,5 +1,6 @@
 automation:
   - id: schedule_automation
+    alias: schedule_automation
     description: ""
     triggers:
       - trigger: sun
