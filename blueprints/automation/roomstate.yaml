@@ -1,0 +1,85 @@
+blueprint:
+  name: Room State
+  description: create an automation that connects given input_boolean and entities
+  domain: automation
+  input:
+    entities:
+      name: entities
+      description: The entities to keep in sync.
+      selector:
+        entity:
+          multiple: True
+    state:
+      name: state
+      description: Boolean helper which keeps the state of the room
+      selector:
+        entity:
+          domain: input_boolean
+variables:
+  entities: !input entities
+alias: sercan_roomstate
+description: ""
+trigger:
+  - platform: state
+    entity_id: !input entities
+    id: real
+  - platform: state
+    entity_id:
+      - !input state
+    id: state_on
+    from: "off"
+    to: "on"
+  - platform: state
+    entity_id:
+      - !input state
+    id: state_off
+    from: "on"
+    to: "off"
+condition: []
+action:
+  - choose:
+      - conditions:
+          - condition: trigger
+            id:
+              - real
+        sequence:
+          - choose:
+              - conditions:
+                  condition: template
+                  value_template: "{{states | selectattr('entity_id', 'in', entities) | selectattr('state', 'ne', 'off') | list | count == 0}}"
+                sequence:
+                  - action: homeassistant.turn_off
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: !input state
+              - conditions: []
+                sequence:
+                  - action: homeassistant.turn_on
+                    metadata: {}
+                    data: {}
+                    target:
+                      entity_id: !input state
+      - conditions:
+          - condition: template
+            value_template: "{{now()-this.attributes.last_triggered > timedelta(milliseconds=200)}}"
+          - condition: trigger
+            id:
+              - state_on
+        sequence:
+          - action: homeassistant.turn_off
+            metadata: {}
+            data: {}
+            target:
+              entity_id: !input state
+      - conditions: 
+          - condition: template
+            value_template: "{{now()-this.attributes.last_triggered > timedelta(milliseconds=200)}}"
+        sequence:
+          - action: homeassistant.turn_off
+            metadata: {}
+            data: {}
+            target:
+              entity_id: !input entities
+
+mode: queued
