@@ -1,75 +1,41 @@
-script:
-  roomstate_toggle:
-    fields:
-      room:
-        name: Room
-        selector:
-          area:
-        description: "room to switch"
-    variables:
-      entities: >-
-        {{ (states.light|list + states.climate|list)
-        | selectattr('entity_id', 'in', area_entities(room)) 
-        | map(attribute='entity_id')
-        | list }}
-      scene_id: "{{ room + '_roomstate' }}"
-    sequence:
-      - choose:
-          - conditions:
-              - condition: template
-                value_template: >-
-                  {{ expand(states) 
-                  | selectattr('entity_id', 'in', entities) 
-                  | rejectattr('state', 'eq', 'off')
-                  | list | count > 0 }}
-            sequence:
-              - action: scene.create
-                data:
-                  scene_id: "{{ scene_id }}"
-                  snapshot_entities: >-
-                    {{ entities }}
-              - action: climate.turn_off
-                target:
-                  area_id: "{{room}}"
-              - action: light.turn_off
-                target:
-                  area_id: "{{room}}"
-          - conditions: []
-            sequence:
-              - action: scene.turn_on
-                target:
-                  entity_id: "{{'scene.' + scene_id }}"
-  housestate_toggle:
-    variables:
-      entities: >-
-        {{ (states.light|list + states.climate|list)
-        | map(attribute='entity_id')
-        | list }}
-      scene_id: "housestate"
-    sequence:
-      - choose:
-          - conditions:
-              - condition: template
-                value_template: >-
-                  {{ expand(states) 
-                  | selectattr('entity_id', 'in', entities) 
-                  | rejectattr('state', 'eq', 'off')
-                  | list | count > 0 }}
-            sequence:
-              - action: scene.create
-                data:
-                  scene_id: "{{ scene_id }}"
-                  snapshot_entities: >-
-                    {{ entities }}
-              - action: climate.turn_off
-                target:
-                  area_id: "{{room}}"
-              - action: light.turn_off
-                target:
-                  area_id: "{{room}}"
-          - conditions: []
-            sequence:
-              - action: scene.turn_on
-                target:
-                  entity_id: "{{'scene.' + scene_id }}"
-
+input_boolean:
+  bahce_roomstate:
+    name: bahce_roomstate
+    icon: mdi:home
+    initial: off
+  banyo_roomstate:
+    name: banyo_roomstate
+    icon: mdi:home
+    initial: off
+  garaj_roomstate:
+    name: garaj_roomstate
+    icon: mdi:home
+    initial: off
+  koridor_roomstate:
+    name: koridor_roomstate
+    icon: mdi:home
+    initial: off
+  melike_roomstate:
+    name: melike_roomstate
+    icon: mdi:home
+    initial: off
+  misafir_roomstate:
+    name: misafir_roomstate
+    icon: mdi:home
+    initial: off
+  salon_roomstate:
+    name: salon_roomstate
+    icon: mdi:home
+    initial: off
+  sercan_roomstate:
+    name: sercan_roomstate
+    icon: mdi:home
+    initial: off
+  yatak_roomstate:
+    name: yatak_roomstate
+    icon: mdi:home
+    initial: off
+  bebek_roomstate:
+    name: bebek_roomstate
+    icon: mdi:home
+    initial: off

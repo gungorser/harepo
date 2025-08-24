@@ -84,8 +84,8 @@ views:
             layout_options:
               grid_columns: 1
               grid_rows: 2
-            entity: input_boolean.banyo_roomstate
-            name: Banyo
+            entity: input_boolean.bebek_roomstate
+            name: Bebek
           - show_name: true
             show_icon: true
             type: button
