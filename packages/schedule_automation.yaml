@@ -14,23 +14,23 @@ automation:
       - trigger: calendar
         entity_id: calendar.sercan
         event: start
-        offset: "0:0:0"
+        offset: "-0:30:0"
         id: event_start
       - trigger: calendar
         entity_id: calendar.melike
         event: start
-        offset: "0:0:0"
+        offset: "-0:30:0"
         id: event_start
       - trigger: calendar
         entity_id: calendar.sercan
         event: end
         offset: "0:0:0"
-        id: event_end
+        id: sercan_event_end
       - trigger: calendar
         entity_id: calendar.melike
         event: end
         offset: "-0:0:0"
-        id: event_end
+        id: melike_event_end
     conditions: []
     actions:
       - choose:
@@ -44,36 +44,51 @@ automation:
                 data:
                   hvac_mode: heat
                 target:
-                  area_id: melike_ofis
+                  area_id: "{{ trigger.calendar_event.summary }}"
           - conditions:
               - condition: trigger
                 id:
-                  - event_end
+                  - sercan_event_end
+                  - melike_event_end
             sequence:
               - action: climate.set_hvac_mode
                 metadata: {}
                 data:
                   hvac_mode: "off"
                 target:
-                  area_id: "{{ trigger.calendar_event.message }}"
-              - action: climate.turn_off
-                metadata: {}
-                data: {}
+                  area_id: "{{ trigger.calendar_event.summary }}"
+              - action: calendar.get_events
                 target:
-                  area_id: "{{ trigger.calendar_event.message }}"
+                  entity_id: "{{ 'calendar.sercan' if trigger.id == 'sercan_event_end' else 'calendar.melike' }}"
+                data:
+                  start_date_time: "{{  as_datetime(state_attr('sun.sun', 'next_rising')) - timedelta(days=1) }}"
+                  duration:
+                    hours: 0
+                    minutes: 0
+                    seconds: 1
+                  response_variable: active_event_during_sunrise
               - if:
                   - condition: template
                     value_template: >-
-                      {% set event_start = as_local(as_datetime(trigger.calendar_event.start_time)) %}  
-                      {% set event_end = as_local(as_datetime(trigger.calendar_event.end_time)) %}   
-                      {% set sunrise = as_datetime(state_attr('sun.sun', 'next_rising')) - timedelta(days=1) %}   
-                      {{ event_start <= sunrise <= event_end }}
+                      {% set sunrise_event = active_event_during_sunrise.values() | map(attribute='events') | list | first %}
+                      {% set is_subset = true %}
+                      {% for key in sunrise_event %}
+                        {% if trigger.calendar_event[key] != sunrise_event[k] %}
+                          {% set is_subset = false %}
+                        {% endif %}
+                      {% endfor %}
+                      {{ is_subset }}
                 then:
                   - action: cover.open_cover
                     metadata: {}
                     data: {}
                     target:
-                      area_id: "{{trigger.calendar_event.message }}"
+                      area_id: "{{trigger.calendar_event.summary }}"
+                  - wait_template: >-
+                      {{ trigger.calendar_event.summary
+                            | select('match','cover.*') 
+                            | map('state_attr', 'current_position')
+                            | reject('eq', 100) | list }}
           - conditions:
               - condition: trigger
                 id:
@@ -88,17 +103,26 @@ automation:
                 id:
                   - sunrise
             sequence:
+              - action: calendar.get_events
+                target:
+                  entity_id:
+                    - calendar.sercan
+                    - calendar.melike
+                data:
+                  start_date_time: "{{ now() }}"
+                  duration:
+                    hours: 0
+                    minutes: 0
+                    seconds: 1
+                  response_variable: active_events
               - action: cover.open_cover
                 metadata: {}
                 data: {}
                 target: >-
-                  {% set calendars = [states.calendar.sercan,states.calendar.melike]%}    
-                  {% set ongoing = namespace(messages=[]) %}   
-                  {% for cal in calendars %}
-                    {% set start = as_local(as_datetime(cal.attributes.start_time)) %}
-                    {% if start < now() %}
-                      {% set ongoing.messages = ongoing.messages + [cal.attributes.message] %}
-                    {% endif %}
-                  {% endfor %}    
-                  {{ {'area_id':  areas() | reject('in',ongoing.messages) | list } }}
-    mode: single
+                  {{ {'area_id':  areas()   
+                      | reject('in', active_events.values() 
+                      | map(attribute='events')
+                      | sum(start=[])
+                      | map(attribute='summary')
+                      | unique ) | list } }}
+    mode: queued

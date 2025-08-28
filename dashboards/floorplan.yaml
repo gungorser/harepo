@@ -168,6 +168,15 @@ views:
               action: more-info
           - type: state-icon
             style:
+              left: 57%
+              top: 84%
+            tap_action:
+              action: toggle
+            entity: valve.bahce_valve
+            hold_action:
+              action: more-info
+          - type: state-icon
+            style:
               left: 20%
               top: 37%
             tap_action:
