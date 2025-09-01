@@ -1,6 +1,6 @@
 automation:
-  - id: schedule_automation
-    alias: schedule_automation
+  - id: cover_schedule
+    alias: cover_schedule
     description: ""
     triggers:
       - trigger: sun
@@ -11,16 +11,6 @@ automation:
         event: sunrise
         offset: 0
         id: sunrise
-      - trigger: calendar
-        entity_id: calendar.sercan
-        event: start
-        offset: "-0:30:0"
-        id: event_start
-      - trigger: calendar
-        entity_id: calendar.melike
-        event: start
-        offset: "-0:30:0"
-        id: event_start
       - trigger: calendar
         entity_id: calendar.sercan
         event: end
@@ -38,17 +28,6 @@ automation:
     conditions: []
     actions:
       - choose:
-          - conditions:
-              - condition: trigger
-                id:
-                  - event_start
-            sequence:
-              - action: climate.set_hvac_mode
-                metadata: {}
-                data:
-                  hvac_mode: heat
-                target:
-                  area_id: "{{ area_id(trigger.calendar_event.description) }}"
           - conditions:
               - condition: trigger
                 id:
@@ -77,12 +56,6 @@ automation:
                           | select(area_id(trigger.calendar_event.description))
                           | list | count == 0 }}
                 then:
-                  - action: climate.set_hvac_mode
-                    metadata: {}
-                    data:
-                      hvac_mode: "off"
-                    target:
-                      area_id: "{{ area_id(trigger.calendar_event.description) }}"
                   - action: calendar.get_events
                     target:
                       entity_id: "{{ calendar_id }}"
