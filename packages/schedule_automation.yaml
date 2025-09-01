@@ -25,12 +25,16 @@ automation:
         entity_id: calendar.sercan
         event: end
         offset: "0:0:0"
-        id: sercan_event_end
+        id: event_end
+        variables:
+          calendar_id: calendar.sercan
       - trigger: calendar
         entity_id: calendar.melike
         event: end
         offset: "-0:0:0"
-        id: melike_event_end
+        id: event_end
+        variables:
+          calendar_id: calendar.melike
     conditions: []
     actions:
       - choose:
@@ -44,51 +48,69 @@ automation:
                 data:
                   hvac_mode: heat
                 target:
-                  area_id: "{{ trigger.calendar_event.summary }}"
+                  area_id: "{{ area_id(trigger.calendar_event.description) }}"
           - conditions:
               - condition: trigger
                 id:
-                  - sercan_event_end
-                  - melike_event_end
+                  - event_end
             sequence:
-              - action: climate.set_hvac_mode
-                metadata: {}
-                data:
-                  hvac_mode: "off"
-                target:
-                  area_id: "{{ trigger.calendar_event.summary }}"
               - action: calendar.get_events
                 target:
-                  entity_id: "{{ 'calendar.sercan' if trigger.id == 'sercan_event_end' else 'calendar.melike' }}"
+                  entity_id: >-
+                    {{ ['calendar.sercan', 'calendar.melike'] 
+                          | reject(this.calendar_id) }}
                 data:
-                  start_date_time: "{{  as_datetime(state_attr('sun.sun', 'next_rising')) - timedelta(days=1) }}"
+                  start_date_time: "{{ now() }}"
                   duration:
                     hours: 0
                     minutes: 0
                     seconds: 1
-                  response_variable: active_event_during_sunrise
+                response_variable: active_events_from_others
               - if:
                   - condition: template
                     value_template: >-
-                      {% set sunrise_event = active_event_during_sunrise.values() | map(attribute='events') | list | first %}
-                      {% set is_subset = true %}
-                      {% for key in sunrise_event %}
-                        {% if trigger.calendar_event[key] != sunrise_event[k] %}
-                          {% set is_subset = false %}
-                        {% endif %}
-                      {% endfor %}
-                      {{ is_subset }}
+                      {{ active_events_from_others.values() 
+                          | map(attribute='events')
+                          | sum(start=[])
+                          | map(attribute='description')
+                          | map('area_id')
+                          | select(area_id(trigger.calendar_event.description))
+                          | list | count == 0 }}
                 then:
-                  - action: cover.open_cover
+                  - action: climate.set_hvac_mode
                     metadata: {}
-                    data: {}
+                    data:
+                      hvac_mode: "off"
                     target:
-                      area_id: "{{trigger.calendar_event.summary }}"
-                  - wait_template: >-
-                      {{ trigger.calendar_event.summary
-                            | select('match','cover.*') 
-                            | map('state_attr', 'current_position')
-                            | reject('eq', 100) | list }}
+                      area_id: "{{ area_id(trigger.calendar_event.description) }}"
+                  - action: calendar.get_events
+                    target:
+                      entity_id: "{{ calendar_id }}"
+                    data:
+                      start_date_time: "{{  as_datetime(state_attr('sun.sun', 'next_rising')) - timedelta(days=1) }}"
+                      duration:
+                        hours: 0
+                        minutes: 0
+                        seconds: 1
+                    response_variable: active_event_during_sunrise
+                  - if:
+                      - condition: template
+                        value_template: >-
+                          {% set sunrise_event = active_event_during_sunrise.values() | map(attribute='events') | list | first %}
+                          {% set is_subset = true %}
+                          {% for key in sunrise_event %}
+                            {% if trigger.calendar_event[key] != sunrise_event[k] %}
+                              {% set is_subset = false %}
+                            {% endif %}
+                          {% endfor %}
+                          {{ is_subset }}
+                    then:
+                      - action: cover.open_cover
+                        metadata: {}
+                        data: {}
+                        target:
+                          area_id: "{{area_id(trigger.calendar_event.description) }}"
+                      - delay: 120
           - conditions:
               - condition: trigger
                 id:
@@ -114,7 +136,7 @@ automation:
                     hours: 0
                     minutes: 0
                     seconds: 1
-                  response_variable: active_events
+                response_variable: active_events
               - action: cover.open_cover
                 metadata: {}
                 data: {}
@@ -123,6 +145,7 @@ automation:
                       | reject('in', active_events.values() 
                       | map(attribute='events')
                       | sum(start=[])
-                      | map(attribute='summary')
+                      | map(attribute='description')
+                      | map('area_id')
                       | unique ) | list } }}
     mode: queued
