@@ -1,0 +1,79 @@
+blueprint:
+  name: Climate schedule
+  description: Climate schedule blueprint
+  domain: automation
+  input:
+    calendars:
+      name: Choose calendars
+      selector:
+        entity:
+          domain: calendar
+          multiple: True
+
+alias: Climate schedule
+triggers: >-
+  {% for calendar in !input calendars %}
+  - trigger: calendar
+    entity_id: {{ calendar }}
+    event: start
+    offset: "0:0:0"
+  - trigger: calendar
+    entity_id: {{ calendar }}
+    event: start
+    offset: "+0:30:0"
+  - trigger: calendar
+    entity_id: {{ calendar }}
+    event: end
+    offset: "0:0:0"
+  - trigger: calendar
+    entity_id: {{ calendar }}
+    event: end
+    offset: "-0:30:0"
+  {% endfor %}
+
+conditions: []
+
+actions:
+  - variables:
+      event_time: >-
+        {% if trigger.event == 'start' %}
+          {% set start_no_offset = trigger.calendar_event.start %}
+        {% else %}
+          {% set start_no_offset = trigger.calendar_event.end %}
+        {% endif %}
+        {{ as_datetime(as_local(start_no_offset)) + trigger.offset }}
+  - action: calendar.get_events
+    target:
+      entity_id: >-
+        {{ states.calendar | map(attribute='entity_id') | list }}
+    data:
+      start_date_time: "{{ event_time }}"
+      duration:
+        hours: 0
+        minutes: 0
+        seconds: 1
+    response_variable: active_events
+  - variables:
+      room_id: >-
+        {{ area_id((trigger.calendar_event.description | from_json).area_name) }}
+      sleep_temps: >-
+        {% set all_events = active_events_from_others.values() | map(attribute='events') | sum(start=[]) | list %}
+        {% set ns = namespace(temps=[]) %}
+        {% for event in all_events %}
+          {% set desc = event.description | from_json %}
+          {% if area_id(desc['room_id']) == room_id %}
+            {% if 'sleep_temp' in desc and event.start + timedelta(seconds=1800) >= event_time and event.end - timedelta(seconds=1800) < event_time %}
+              {% set ns.temps = ns.temps + [ desc['sleep_temp'] ] %}
+            {% elif  event.start >= event_time and event.end < event_time %}
+              {% set ns.temps = ns.temps + [desc['temp']] %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {{ ns.temps }}
+  - action: climate.set_temperature
+    data:
+      temperature: "{{ (ns.temps | max) if ns.temps else 7 }}"
+      hvac_mode: '{{ "heat" if ns.temps else "off" }}'
+    target:
+      area_id: "{{ room_id }}"
+mode: queued
