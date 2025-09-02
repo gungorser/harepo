@@ -36,8 +36,7 @@ automation:
               - action: calendar.get_events
                 target:
                   entity_id: >-
-                    {{ ['calendar.sercan', 'calendar.melike'] 
-                          | reject(this.calendar_id) }}
+                    {{ ['calendar.sercan', 'calendar.melike'] | reject(calendar_id) | list }}
                 data:
                   start_date_time: "{{ now() }}"
                   duration:
@@ -120,5 +119,5 @@ automation:
                       | sum(start=[])
                       | map(attribute='description')
                       | map('area_id')
-                      | unique ) | list } }}
+                      | unique | list) | list } }}
     mode: queued
