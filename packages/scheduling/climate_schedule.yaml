@@ -28,7 +28,7 @@ automation:
             {% else %}
               {% set start_no_offset = trigger.calendar_event.end %}
             {% endif %}
-            {{ as_datetime(as_local(start_no_offset)) + trigger.offset }}
+            {{ as_local(as_datetime(start_no_offset)) + trigger.offset }}
       - action: calendar.get_events
         target:
           entity_id: >-
@@ -49,11 +49,10 @@ automation:
             {% for event in all_events %}
               {% set desc = event.description | from_json %}
               {% if area_id(desc['room_id']) == room_id %}
-                {% set event_time = trigger.%}
                 {% if 'sleep_temp' in desc and event.start + timedelta(seconds=1800) >= event_time and event.end - timedelta(seconds=1800) < event_time %}
-                  {% ns.temps = ns.temps + [desc['sleep_temp']] %}
+                  {% set ns.temps = ns.temps + [ desc['sleep_temp'] ] %}
                 {% elif  event.start >= event_time and event.end < event_time %}
-                  {% ns.temps = ns.temps + [desc['temp']] %}
+                  {% set ns.temps = ns.temps + [desc['temp']] %}
                 {% endif %}
               {% endif %}
             {% endfor %}
