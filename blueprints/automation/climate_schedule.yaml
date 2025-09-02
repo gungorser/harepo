@@ -11,21 +11,21 @@ blueprint:
           multiple: True
 
 alias: Climate schedule
-triggers: >-
+trigger: >-
   {% for calendar in !input calendars %}
-  - trigger: calendar
+  - platform: calendar
     entity_id: {{ calendar }}
     event: start
     offset: "0:0:0"
-  - trigger: calendar
+  - platform: calendar
     entity_id: {{ calendar }}
     event: start
     offset: "+0:30:0"
-  - trigger: calendar
+  - platform: calendar
     entity_id: {{ calendar }}
     event: end
     offset: "0:0:0"
-  - trigger: calendar
+  - platform: calendar
     entity_id: {{ calendar }}
     event: end
     offset: "-0:30:0"
