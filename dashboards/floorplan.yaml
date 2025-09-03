@@ -483,6 +483,11 @@ views:
               top: 90%
             entity: cover.sercan_cover
           - type: state-icon
+            style:
+              left: 27%
+              top: 64%
+            entity: switch.sercan_plug
+          - type: state-icon
             entity: vacuum.roborock_s5_d456_robot_cleaner
             style:
               top: 81%

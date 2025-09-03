@@ -155,3 +155,21 @@ automation:
         target:
           entity_id: light.car_light
     mode: single
+
+  - id: sercan_plug
+    alias: sercan_plug
+    description: "long press for toggling the AC outlet"
+    triggers:
+      - domain: mqtt
+        device_id: d3fd09e3b60a91f37e64b9137c1bba7b
+        type: action
+        subtype: 1_hold
+        trigger: device
+    conditions: []
+    actions:
+      - action: switch.toggle
+        metadata: {}
+        data: {}
+        target:
+          entity_id: switch.sercan_plug
+    mode: single

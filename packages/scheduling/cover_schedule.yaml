@@ -45,8 +45,8 @@ automation:
             {% set ns = namespace(sleep_rooms=[]) %}
             {% for event in all_events %}
               {% set desc = event.description | from_json %}
-              {% if as_timestamp(event.start) <= now() 
-                and as_timestamp(event.end) > now() %}
+              {% if as_timestamp(event.start) <= as_timestamp(now()) 
+                and as_timestamp(event.end) > as_timestamp(now()) %}
                 {% set ns.sleep_rooms = ns.sleep_rooms + [area_id(desc['room_name'])] %}
               {% endif %}
             {% endfor %}

@@ -71,31 +71,52 @@ automation:
             hours: 0
             minutes: 0
             seconds: 1
-        response_variable: active_events
+        response_variable: after_events
+      - action: calendar.get_events
+        target:
+          entity_id: >-
+            {{ states.calendar | map(attribute='entity_id') | list }}
+        data:
+          start_date_time: "{{ (as_timestamp(event_time)-1) | timestamp_local }}"
+          duration:
+            hours: 0
+            minutes: 0
+            seconds: 1
+        response_variable: before_events
       - variables:
           room_id: >
             {{ area_id((trigger.calendar_event.description | from_json)['room_name']) }}
-          room_temps: >-
-            {% set all_events = active_events.values() | map(attribute='events') | sum(start=[]) | list %}
-            {% set ns = namespace(temps=[]) %}
-            {% for event in all_events %}
-              {% set desc = event.description | from_json %}
-              {% if area_id(desc['room_name']) == room_id %}
-                {% if 'sleep_temp' in desc 
+          room_temps: >
+            {% set ns = namespace(temps_all=[]) %} 
+            {% for events in [before_events, after_events] %}
+              {% set ns2 = namespace(temps=[]) %} 
+              {% set all_events = events.values() | map(attribute='events') | sum(start=[]) | list %}
+              {% for event in all_events %}
+                {% set desc = event.description | from_json %}
+                {% if area_id(desc['room_name']) == room_id %}
+                  {% if 'sleep_temp' in desc 
                       and as_timestamp(event.start) + timedelta(seconds=1800) <= as_timestamp(event_time) 
                       and as_timestamp(event.end) - timedelta(seconds=1800) > as_timestamp(event_time) %}
-                  {% set ns.temps = ns.temps + [ desc['sleep_temp'] ] %}
-                {% elif   as_timestamp(event.start) <= as_timestamp(event_time) 
+                    {% set ns2.temps = ns2.temps + [ desc['sleep_temp'] ] %}
+                  {% elif   as_timestamp(event.start) <= as_timestamp(event_time) 
                       and as_timestamp(event.end) > as_timestamp(event_time) %}
-                  {% set ns.temps = ns.temps + [desc['temp']] %}
+                    {% set ns2.temps = ns2.temps + [desc['temp']] %}    
+                  {% endif %}
                 {% endif %}
-              {% endif %}
-            {% endfor %}
-            {{ ns.temps }}
-      - action: climate.set_temperature
-        data:
-          temperature: "{{ (room_temps | max) if room_temps else 7 }}"
-          hvac_mode: "{{ 'heat' if room_temps else 'off' }}"
-        target:
-          area_id: "{{ room_id }}"
+              {% endfor %}
+              {% set ns.temps_all = ns.temps_all + [ ns2.temps ] %}
+              {% set ns2.temps = [] %}
+            {% endfor %} 
+            {{ ns.temps_all }}
+      - if: >
+          {% set before = none if room_temps[0] else room_temps[0] | max %}
+          {% set after = none if room_temps[1] else room_temps[1] | max %}
+          {{ before != after }}
+        then:
+          - action: climate.set_temperature
+            data:
+              temperature: "{{ after | int(0) }}"
+              hvac_mode: "{{ 'heat' if after else 'off' }}"
+            target:
+              area_id: "{{ room_id }}"
     mode: queued
