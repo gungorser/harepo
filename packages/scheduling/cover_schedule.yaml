@@ -40,12 +40,13 @@ automation:
             seconds: 1
         response_variable: active_events
       - variables:
-          sleep_rooms: >-
+          sleep_rooms: >
             {% set all_events = active_events.values() | map(attribute='events') | sum(start=[]) | list %}
             {% set ns = namespace(sleep_rooms=[]) %}
             {% for event in all_events %}
               {% set desc = event.description | from_json %}
-              {% if event.start >= now() and event.end < now() %}
+              {% if as_timestamp(event.start) <= now() 
+                and as_timestamp(event.end) > now() %}
                 {% set ns.sleep_rooms = ns.sleep_rooms + [area_id(desc['room_name'])] %}
               {% endif %}
             {% endfor %}
