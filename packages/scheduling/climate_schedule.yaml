@@ -19,6 +19,38 @@ automation:
         entity_id: calendar.sercan
         event: end
         offset: "-0:30:0"
+      - trigger: calendar
+        entity_id: calendar.melike
+        event: start
+        offset: "0:0:0"
+      - trigger: calendar
+        entity_id: calendar.melike
+        event: start
+        offset: "+0:30:0"
+      - trigger: calendar
+        entity_id: calendar.melike
+        event: end
+        offset: "0:0:0"
+      - trigger: calendar
+        entity_id: calendar.melike
+        event: end
+        offset: "-0:30:0"
+      - trigger: calendar
+        entity_id: calendar.misafir
+        event: start
+        offset: "0:0:0"
+      - trigger: calendar
+        entity_id: calendar.misafir
+        event: start
+        offset: "+0:30:0"
+      - trigger: calendar
+        entity_id: calendar.misafir
+        event: end
+        offset: "0:0:0"
+      - trigger: calendar
+        entity_id: calendar.misafir
+        event: end
+        offset: "-0:30:0"
     conditions: []
     actions:
       - variables:
@@ -41,17 +73,20 @@ automation:
             seconds: 1
         response_variable: active_events
       - variables:
-          room_id: >-
-            {{ area_id((trigger.calendar_event.description | from_json).area_name) }}
-          sleep_temps: >-
-            {% set all_events = active_events_from_others.values() | map(attribute='events') | sum(start=[]) | list %}
+          room_id: >
+            {{ area_id((trigger.calendar_event.description | from_json)['room_name']) }}
+          room_temps: >-
+            {% set all_events = active_events.values() | map(attribute='events') | sum(start=[]) | list %}
             {% set ns = namespace(temps=[]) %}
             {% for event in all_events %}
               {% set desc = event.description | from_json %}
-              {% if area_id(desc['room_id']) == room_id %}
-                {% if 'sleep_temp' in desc and event.start + timedelta(seconds=1800) >= event_time and event.end - timedelta(seconds=1800) < event_time %}
+              {% if area_id(desc['room_name']) == room_id %}
+                {% if 'sleep_temp' in desc 
+                      and as_timestamp(event.start) + timedelta(seconds=1800) <= as_timestamp(event_time) 
+                      and as_timestamp(event.end) - timedelta(seconds=1800) > as_timestamp(event_time) %}
                   {% set ns.temps = ns.temps + [ desc['sleep_temp'] ] %}
-                {% elif  event.start >= event_time and event.end < event_time %}
+                {% elif   as_timestamp(event.start) <= as_timestamp(event_time) 
+                      and as_timestamp(event.end) > as_timestamp(event_time) %}
                   {% set ns.temps = ns.temps + [desc['temp']] %}
                 {% endif %}
               {% endif %}
@@ -59,8 +94,8 @@ automation:
             {{ ns.temps }}
       - action: climate.set_temperature
         data:
-          temperature: "{{ (ns.temps | max) if ns.temps else 7 }}"
-          hvac_mode: '{{ "heat" if ns.temps else "off" }}'
+          temperature: "{{ (room_temps | max) if room_temps else 7 }}"
+          hvac_mode: "{{ 'heat' if room_temps else 'off' }}"
         target:
           area_id: "{{ room_id }}"
     mode: queued
