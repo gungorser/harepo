@@ -95,8 +95,8 @@ automation:
                 {% set desc = event.description | from_json %}
                 {% if area_id(desc['room_name']) == room_id %}
                   {% if 'sleep_temp' in desc 
-                      and as_timestamp(event.start) + timedelta(seconds=1800) <= as_timestamp(event_time) 
-                      and as_timestamp(event.end) - timedelta(seconds=1800) > as_timestamp(event_time) %}
+                      and as_timestamp(event.start) + 1800 <= as_timestamp(event_time) 
+                      and as_timestamp(event.end) - 1800 > as_timestamp(event_time) %}
                     {% set ns2.temps = ns2.temps + [ desc['sleep_temp'] ] %}
                   {% elif   as_timestamp(event.start) <= as_timestamp(event_time) 
                       and as_timestamp(event.end) > as_timestamp(event_time) %}
@@ -109,8 +109,8 @@ automation:
             {% endfor %} 
             {{ ns.temps_all }}
       - if: >
-          {% set before = none if room_temps[0] else room_temps[0] | max %}
-          {% set after = none if room_temps[1] else room_temps[1] | max %}
+          {% set before = room_temps[0] | max if room_temps[0] else none %} 
+          {% set after = room_temps[1] | max if room_temps[1] else none %}
           {{ before != after }}
         then:
           - action: climate.set_temperature

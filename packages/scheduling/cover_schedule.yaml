@@ -41,16 +41,18 @@ automation:
         response_variable: active_events
       - variables:
           sleep_rooms: >
+            {% set next_rising = as_datetime(state_attr('sun.sun', 'next_rising')) %}
+            {% set prev_rising = next_rising - timedelta(days=1) %}
             {% set all_events = active_events.values() | map(attribute='events') | sum(start=[]) | list %}
             {% set ns = namespace(sleep_rooms=[]) %}
             {% for event in all_events %}
               {% set desc = event.description | from_json %}
-              {% if as_timestamp(event.start) <= as_timestamp(now()) 
-                and as_timestamp(event.end) > as_timestamp(now()) %}
+              {% if as_timestamp(event.start) <= as_timestamp(prev_rising) 
+                and as_timestamp(event.end) > as_timestamp(prev_rising) %}
                 {% set ns.sleep_rooms = ns.sleep_rooms + [area_id(desc['room_name'])] %}
               {% endif %}
             {% endfor %}
-            {{ ns.sleep_rooms }}
+            {{ ns.sleep_rooms | unique | list }}
       - choose:
           - conditions:
               - condition: trigger
