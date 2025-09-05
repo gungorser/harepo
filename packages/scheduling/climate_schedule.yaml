@@ -108,10 +108,10 @@ automation:
               {% set ns2.temps = [] %}
             {% endfor %} 
             {{ ns.temps_all }}
-      - if: >
-          {% set before = room_temps[0] | max if room_temps[0] else none %} 
-          {% set after = room_temps[1] | max if room_temps[1] else none %}
-          {{ before != after }}
+      - variables:
+          before: "{{ room_temps[0] | max if room_temps[0] else none }}"
+          after: "{{ room_temps[1] | max if room_temps[1] else none }}"
+      - if: "{{ before != after }}"
         then:
           - action: climate.set_temperature
             data:
