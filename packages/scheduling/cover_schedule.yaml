@@ -28,31 +28,30 @@ automation:
         id: event_end
     conditions: []
     actions:
+      - variables:
+          sunrise: >
+            {% set next_rising = as_datetime(state_attr('sun.sun', 'next_rising')) %}
+            {{next_rising - timedelta(days=1) }}
       - action: calendar.get_events
         target:
           entity_id: >-
             {{ states.calendar | map(attribute='entity_id') | list }}
         data:
-          start_date_time: "{{ now() }}"
+          start_date_time: "{{ sunrise }}"
           duration:
             hours: 0
             minutes: 0
             seconds: 1
-        response_variable: active_events
+        response_variable: sunrise_events
       - variables:
           sleep_rooms: >
-            {% set next_rising = as_datetime(state_attr('sun.sun', 'next_rising')) %}
-            {% set prev_rising = next_rising - timedelta(days=1) %}
-            {% set all_events = active_events.values() | map(attribute='events') | sum(start=[]) | list %}
-            {% set ns = namespace(sleep_rooms=[]) %}
-            {% for event in all_events %}
-              {% set desc = event.description | from_json %}
-              {% if as_timestamp(event.start) <= as_timestamp(prev_rising) 
-                and as_timestamp(event.end) > as_timestamp(prev_rising) %}
-                {% set ns.sleep_rooms = ns.sleep_rooms + [area_id(desc['room_name'])] %}
-              {% endif %}
-            {% endfor %}
-            {{ ns.sleep_rooms | unique | list }}
+            {{ sunrise_events.values() 
+                | map(attribute='events') 
+                | sum(start=[]) 
+                | map('from_json')
+                | map(attribute='room_name')
+                | map('area_id')
+                | unique | list }}
       - choose:
           - conditions:
               - condition: trigger
@@ -62,9 +61,7 @@ automation:
               - action: cover.open_cover
                 metadata: {}
                 data: {}
-                target:
-                  area_id: "{{ sleep_rooms }}"
-              - delay: 120
+                target: "{{ {'area_id': sleep_rooms} }}"
           - conditions:
               - condition: trigger
                 id:
@@ -73,8 +70,7 @@ automation:
               - action: cover.close_cover
                 metadata: {}
                 data: {}
-                target:
-                  area_id: "{{ areas() | list }}"
+                target: "{{ {'area_id': areas() | list} }}"
           - conditions:
               - condition: trigger
                 id:
@@ -83,6 +79,7 @@ automation:
               - action: cover.open_cover
                 metadata: {}
                 data: {}
-                target:
-                  area_id: "{{ areas() | reject('in', sleep_rooms) | list }}"
+                target: "{{ {'area_id': areas() | reject('in', sleep_rooms) | list} }}"
+      - delay: 120
+
     mode: queued

@@ -107,8 +107,9 @@ action:
             metadata: {}
             target:
               entity_id: !input valve
-            data:
-              temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
+              data:
+                hvac_mode: "{{states(trigger.entity_id)}}"
+                temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
       - conditions:
           - condition: trigger
             id: attr_sync_physical
@@ -121,5 +122,6 @@ action:
             target:
               entity_id: !input thermostat
             data:
+              hvac_mode: "{{states(trigger.entity_id)}}"
               temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
 mode: queued
