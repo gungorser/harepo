@@ -34,31 +34,16 @@ automation:
                 id:
                   - event_end
             sequence:
-              - action: calendar.get_events
-                target:
-                  entity_id: >-
-                    {{ states.calendar | map(attribute='entity_id') | list }}
-                data:
-                  start_date_time: >
-                    {% set next_rising = as_datetime(state_attr('sun.sun', 'next_rising')) %}
-                    {{next_rising - timedelta(days=1) }}
-                  duration:
-                    hours: 0
-                    minutes: 0
-                    seconds: 1
-                response_variable: sunrise_events
               - action: cover.open_cover
                 metadata: {}
                 data: {}
-                target: "{{ {'area_id': sunrise_events.values()
-                  | map(attribute='events')
-                  | sum(start=[])
-                  | map(attribute='description')
-                  | map('from_json')
-                  | map(attribute='room_name')
-                  | select('eq', (trigger.calendar_event.description | from_json).room_name)
-                  | map('area_id')
-                  | unique | list} }}"
+                target: >
+                  {% set next_rising = as_datetime(state_attr('sun.sun', 'next_rising')) %}
+                  {% set prev_rising = next_rising - timedelta(days=1) %}
+                  {% set is_sunrise_event = 
+                        as_timestamp(prev_rising) < as_timestamp(trigger.calendar_event.end) and 
+                        as_timestamp(prev_rising) >= as_timestamp(trigger.calendar_event.start) %}
+                  {{ { "area_id": [(trigger.calendar_event.description | from_json).room_name | area_id] if is_sunrise_event else [] } }}
           - conditions:
               - condition: trigger
                 id:
@@ -84,9 +69,11 @@ automation:
                     minutes: 0
                     seconds: 1
                 response_variable: sunrise_events
-              - variables:
-                  sleep_room: >
-                    {{ areas()
+              - action: cover.open_cover
+                metadata: {}
+                data: {}
+                target: >
+                  {{ { "area_id": areas()
                         | reject("in", sunrise_events.values()  
                           | map(attribute='events') 
                           | sum(start=[]) 
@@ -95,7 +82,7 @@ automation:
                           | map(attribute='room_name')
                           | map('area_id')
                           | unique | list)
-                        | list }}
+                        | list } }}
       - delay: 120
 
     mode: queued
