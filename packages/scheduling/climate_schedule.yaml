@@ -87,25 +87,27 @@ automation:
           room_id: >
             {{ area_id((trigger.calendar_event.description | from_json)['room_name']) }}
           room_temps: >
-            {% set ns = namespace(temps_all=[]) %} 
+            {# before ve after icin temps, ikisinin birlikte tutuldugu yer ise temps_all #}
+            {% set ns = namespace(temps=[], temps_all=[]) %} 
             {% for events in [before_events, after_events] %}
-              {% set ns2 = namespace(temps=[]) %} 
+              {# Temps sifirlanir #}
+              {% set ns.temps = [] %} 
               {% set all_events = events.values() | map(attribute='events') | sum(start=[]) | list %}
               {% for event in all_events %}
                 {% set desc = event.description | from_json %}
+                {# sadece bu eventin odasiyla ilgileniyoruz #}
                 {% if area_id(desc['room_name']) == room_id %}
                   {% if 'sleep_temp' in desc 
                       and as_timestamp(event.start) + 1800 <= as_timestamp(event_time) 
-                      and as_timestamp(event.end) - 1800 > as_timestamp(event_time) %}
-                    {% set ns2.temps = ns2.temps + [ desc['sleep_temp'] ] %}
+                      and as_timestamp(event.end) - 1800 >= as_timestamp(event_time) %}
+                    {% set ns.temps = ns.temps + [ desc['sleep_temp'] ] %}
                   {% elif   as_timestamp(event.start) <= as_timestamp(event_time) 
-                      and as_timestamp(event.end) > as_timestamp(event_time) %}
-                    {% set ns2.temps = ns2.temps + [desc['temp']] %}    
+                      and as_timestamp(event.end) >= as_timestamp(event_time) %}
+                    {% set ns.temps = ns.temps + [desc['temp']] %}
                   {% endif %}
                 {% endif %}
               {% endfor %}
-              {% set ns.temps_all = ns.temps_all + [ ns2.temps ] %}
-              {% set ns2.temps = [] %}
+              {% set ns.temps_all = ns.temps_all + [ ns.temps ] %}
             {% endfor %} 
             {{ ns.temps_all }}
       - variables:
