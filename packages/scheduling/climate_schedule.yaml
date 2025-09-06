@@ -99,7 +99,7 @@ automation:
                 {% if area_id(desc['room_name']) == room_id %}
                   {% if 'sleep_temp' in desc 
                       and as_timestamp(event.start) + 1800 <= as_timestamp(event_time) 
-                      and as_timestamp(event.end) - 1800 >= as_timestamp(event_time) %}
+                      and as_timestamp(event.end) - 1800 > as_timestamp(event_time) %}
                     {% set ns.temps = ns.temps + [ desc['sleep_temp'] ] %}
                   {% else %}
                     {% set ns.temps = ns.temps + [desc['temp']] %}
