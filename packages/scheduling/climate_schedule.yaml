@@ -101,8 +101,7 @@ automation:
                       and as_timestamp(event.start) + 1800 <= as_timestamp(event_time) 
                       and as_timestamp(event.end) - 1800 >= as_timestamp(event_time) %}
                     {% set ns.temps = ns.temps + [ desc['sleep_temp'] ] %}
-                  {% elif   as_timestamp(event.start) <= as_timestamp(event_time) 
-                      and as_timestamp(event.end) >= as_timestamp(event_time) %}
+                  {% else %}
                     {% set ns.temps = ns.temps + [desc['temp']] %}
                   {% endif %}
                 {% endif %}
@@ -110,7 +109,6 @@ automation:
               {% set ns.temps_all = ns.temps_all + [ ns.temps ] %}
             {% endfor %} 
             {{ ns.temps_all }}
-      - variables:
           before: "{{ room_temps[0] | max if room_temps[0] else none }}"
           after: "{{ room_temps[1] | max if room_temps[1] else none }}"
       - if: "{{ before != after }}"
@@ -118,6 +116,10 @@ automation:
           - action: climate.set_temperature
             data:
               temperature: "{{ after | int(0) }}"
+            target:
+              area_id: "{{ room_id }}"
+          - action: climate.set_hvac_mode
+            data:
               hvac_mode: "{{ 'heat' if after else 'off' }}"
             target:
               area_id: "{{ room_id }}"
