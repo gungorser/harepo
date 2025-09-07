@@ -89,7 +89,7 @@ automation:
           room_temps: >
             {# before ve after icin temps, ikisinin birlikte tutuldugu yer ise temps_all #}
             {% set ns = namespace(temps=[], temps_all=[]) %} 
-            {% for events in [before_events, after_events] %}
+            {% for seq, events in {'before': before_events, 'after': after_events}.items() %}
               {# Temps sifirlanir #}
               {% set ns.temps = [] %} 
               {% set all_events = events.values() | map(attribute='events') | sum(start=[]) | list %}
@@ -97,9 +97,13 @@ automation:
                 {% set desc = event.description | from_json %}
                 {# sadece bu eventin odasiyla ilgileniyoruz #}
                 {% if area_id(desc['room_name']) == room_id %}
-                  {% if 'sleep_temp' in desc 
+                  {% if 'sleep_temp' in desc and
+                      ((seq == 'before'  
                       and as_timestamp(event.start) + 1800 <= as_timestamp(event_time) 
-                      and as_timestamp(event.end) - 1800 > as_timestamp(event_time) %}
+                      and as_timestamp(event.end) - 1800 > as_timestamp(event_time))
+                      or (seq == 'after'  
+                      and as_timestamp(event.start) + 1800 < as_timestamp(event_time) 
+                      and as_timestamp(event.end) - 1800 >= as_timestamp(event_time))) %}
                     {% set ns.temps = ns.temps + [ desc['sleep_temp'] ] %}
                   {% else %}
                     {% set ns.temps = ns.temps + [desc['temp']] %}
@@ -115,7 +119,7 @@ automation:
         then:
           - action: climate.set_temperature
             data:
-              temperature: "{{ after | int(0) }}"
+              temperature: "{{ after | int(7) }}"
             target:
               area_id: "{{ room_id }}"
           - action: climate.set_hvac_mode
