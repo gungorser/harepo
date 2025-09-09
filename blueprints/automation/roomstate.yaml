@@ -53,7 +53,7 @@ action:
                     target:
                       entity_id: !input state
     default:
-      - action: homeassistant.turn_off
+      - service: homeassistant.turn_off
         metadata: {}
         data: {}
           target:
