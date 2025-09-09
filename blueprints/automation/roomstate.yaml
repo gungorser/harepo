@@ -36,9 +36,9 @@ action:
               - conditions:
                   condition: template
                   value_template: >
-                    {{ states 
-                        | selectattr('entity_id', 'in', entities) 
-                        | selectattr('state', 'ne', 'off') 
+                    {{ states
+                        | selectattr("entity_id", "in", entities) 
+                        | selectattr("state", "ne", "off") 
                         | list }}
                 sequence:
                   - action: homeassistant.turn_on
