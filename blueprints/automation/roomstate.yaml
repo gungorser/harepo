@@ -30,8 +30,7 @@ trigger:
       - !input state
     from: "off"
   - platform: state
-    entity_id:
-      - !input entities
+    entity_id: !input entities
 condition: []
 action:
   - choose:
