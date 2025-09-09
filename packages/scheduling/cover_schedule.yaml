@@ -34,16 +34,69 @@ automation:
                 id:
                   - event_end
             sequence:
+              - action: calendar.get_events
+                target:
+                  entity_id: >-
+                    {{ states.calendar | map(attribute='entity_id') | list }}
+                data:
+                  start_date_time: >
+                    {% set next_rising = as_datetime(state_attr('sun.sun', 'next_rising')) %}
+                    {{next_rising - timedelta(days=1) }}
+                  duration:
+                    hours: 0
+                    minutes: 0
+                    seconds: 1
+                response_variable: sunrise_events
+              - action: calendar.get_events
+                target:
+                  entity_id: >-
+                    {{ states.calendar | map(attribute='entity_id') | list }}
+                data:
+                  start_date_time: "{{ trigger.calendar_event.end }}"
+                  duration:
+                    hours: 0
+                    minutes: 0
+                    seconds: 1
+                response_variable: after_events
               - action: cover.open_cover
                 metadata: {}
                 data: {}
                 target: >
-                  {% set next_rising = as_datetime(state_attr('sun.sun', 'next_rising')) %}
-                  {% set prev_rising = next_rising - timedelta(days=1) %}
-                  {% set is_sunrise_event = 
-                        as_timestamp(prev_rising) < as_timestamp(trigger.calendar_event.end) and 
-                        as_timestamp(prev_rising) >= as_timestamp(trigger.calendar_event.start) %}
-                  {{ { "area_id": [(trigger.calendar_event.description | from_json).room_name | area_id] if is_sunrise_event else [] } }}
+                  {% set current_area_id = (trigger.calendar_event.description | from_json).room_name | area_id %}
+                  {# Check if current event is an sunrise event #}
+                  {% if sunrise_events.values()  
+                    | map(attribute='events') 
+                    | sum(start=[]) 
+                    | selectattr('summary', 'eq', trigger.calendar_event.summary)
+                    | selectattr('description', 'eq', trigger.calendar_event.description)
+                    | selectattr('start', 'eq', trigger.calendar_event.start)
+                    | selectattr('end', 'eq', trigger.calendar_event.end)
+                    | list %}
+                    {# Search all after events, which are also a sunrise event #}
+                    {% set ns = namespace(after_sunrise_events=[]) %}
+                    {% for after_event in after_events.values()  
+                        | map(attribute='events') 
+                        | sum(start=[]) 
+                        | list %}
+                      {% for sunrise_event in sunrise_events.values()  
+                          | map(attribute='events') 
+                          | sum(start=[]) 
+                          | list %}
+                        {% set desc = after_event.description | from_json %}
+                        {% if desc.room_name | area_id == current_area_id 
+                          and after_event.summary == sunrise_event.summary 
+                          and after_event.description == sunrise_event.description 
+                          and after_event.start == sunrise_event.end 
+                          and after_event.end == sunrise_event.end %}
+                          {# Both after and sunrise events are found #}
+                          {% set ns.after_sunrise_events = ns.after_sunrise_events + [after_event] %}
+                        {% endif %}
+                      {% endfor %}
+                    {% endfor %}
+                    {{ { "area_id": [] if ns.after_sunrise_events else [current_area_id] } }}
+                  {% else %}
+                    {{ { "area_id": [] } }}
+                  {% endif %}
           - conditions:
               - condition: trigger
                 id:
