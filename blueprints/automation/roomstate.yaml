@@ -24,11 +24,11 @@ trigger:
     entity_id:
       - !input state
     id: state_off
-    to: off
+    to: "off"
   - platform: state
     entity_id:
       - !input state
-    from: off
+    from: "off"
   - platform: state
     entity_id:
       - !input entities
