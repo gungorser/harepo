@@ -56,7 +56,7 @@ action:
       - service: homeassistant.turn_off
         metadata: {}
         data: {}
-          target:
-            entity_id: !input entities
+        target:
+          entity_id: !input entities
 
 mode: queued
