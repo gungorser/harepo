@@ -52,7 +52,7 @@ action:
                 {{ states
                     | selectattr("entity_id", "in", entities) 
                     | selectattr("state", "ne", "off") 
-                    | list }}
+                    | list | length > 0 }}
             sequence:
               - action: input_boolean.turn_on
                 data: {}
