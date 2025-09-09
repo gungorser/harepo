@@ -21,42 +21,45 @@ alias: sercan_roomstate
 description: ""
 trigger:
   - platform: state
+    entity_id: !input state
+    id: state_off
+    to: off
+  - platform: state
+    entity_id: !input state
+    from: off
+  - platform: state
     entity_id: !input entities
-    id: real
 condition: []
 action:
   - choose:
       - conditions:
           - condition: trigger
             id:
-              - real
+              - state_off
         sequence:
-          - choose:
-              - conditions:
-                  condition: template
-                  value_template: >
-                    {{ states
-                        | selectattr("entity_id", "in", entities) 
-                        | selectattr("state", "ne", "off") 
-                        | list }}
-                sequence:
-                  - action: homeassistant.turn_on
-                    metadata: {}
-                    data: {}
-                    target:
-                      entity_id: !input state
-              - conditions: []
-                sequence:
-                  - action: homeassistant.turn_off
-                    metadata: {}
-                    data: {}
-                    target:
-                      entity_id: !input state
+          - action: homeassistant.turn_off
+            metadata: {}
+            data: {}
+            target:
+              entity_id: !input entities
     default:
-      - service: homeassistant.turn_off
-        metadata: {}
-        data: {}
-        target:
-          entity_id: !input entities
-
+      - choose:
+          - conditions:
+              condition: template
+              value_template: >
+                {{ states
+                    | selectattr("entity_id", "in", entities) 
+                    | selectattr("state", "ne", "off") 
+                    | list }}
+            sequence:
+              - action: input_boolean.turn_on
+                data: {}
+                target:
+                  entity_id: !input state
+          - conditions: []
+            sequence:
+              - action: input_boolean.turn_off
+                data: {}
+                target:
+                  entity_id: !input state
 mode: queued
