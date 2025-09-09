@@ -107,8 +107,8 @@ action:
             metadata: {}
             target:
               entity_id: !input valve
-              data:
-                temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
+            data:
+              temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
       - conditions:
           - condition: trigger
             id: attr_sync_physical
