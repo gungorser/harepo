@@ -1,4 +1,4 @@
-'blueprint:
+blueprint:
   name: Room State
   description: create an automation that connects given input_boolean and entities
   domain: automation
@@ -23,7 +23,6 @@ trigger:
   - platform: state
     entity_id: !input entities
     id: real
-  
 condition: []
 action:
   - choose:
