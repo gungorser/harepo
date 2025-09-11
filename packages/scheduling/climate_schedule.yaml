@@ -119,6 +119,7 @@ automation:
         then:
           - action: climate.set_temperature
             data:
+              hvac_mode: "{{ 'heat' if after else 'off' }}"
               temperature: "{{ after | int(7) }}"
             target:
               area_id: "{{ room_id }}"

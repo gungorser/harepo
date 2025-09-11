@@ -213,7 +213,7 @@ views:
             style:
               left: 10%
               top: 95%
-            entity: light.bahce_light_2
+            entity: light.bahce_light
             tap_action:
               action: toggle
           - type: conditional

@@ -12,12 +12,6 @@ lovelace:
       icon: mdi:home
       show_in_sidebar: true
       filename: gungors/dashboards/roomstate.yaml
-    scheduler-dashboard:
-      mode: yaml
-      title: Scheduling
-      icon: mdi:chart-timeline
-      show_in_sidebar: true
-      filename: gungors/dashboards/scheduling.yaml
     floorplan-dashboard:
       mode: yaml
       title: Floorplan
