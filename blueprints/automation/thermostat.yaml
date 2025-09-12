@@ -82,7 +82,9 @@ action:
             target:
               entity_id: !input valve
             data:
-              hvac_mode: "{{states(trigger.entity_id)}}"
+              hvac_mode: >
+                {% set state = states(trigger.entity_id) %}
+                {{ "off" if state == "unknown" else state }}
       - conditions:
           - condition: trigger
             id: state_sync_physical

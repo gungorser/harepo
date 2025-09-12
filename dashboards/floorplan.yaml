@@ -432,6 +432,17 @@ views:
               color: yellow
               font-weight: bold
           - type: state-label
+            entity: climate.banyo_thermostat
+            attribute: current_temperature
+            tap_action:
+              action: more-info
+            style:
+              top: 88%
+              left: 76%
+              font-size: 16px
+              color: yellow
+              font-weight: bold
+          - type: state-label
             entity: climate.sercan_thermostat
             attribute: current_temperature
             style:

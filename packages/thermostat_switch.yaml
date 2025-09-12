@@ -11,6 +11,7 @@ automation:
               'number.yatak_climate_valve_opening_degree',
               'number.melike_climate_valve_opening_degree',
               'number.bebek_climate_valve_opening_degree',
+              'number.banyo_climate_valve_opening_degree',
               'number.misafir_climate_valve_opening_degree'] 
             | map('states')  
             | select('is_number')
@@ -22,6 +23,7 @@ automation:
               'number.yatak_climate_valve_opening_degree',
               'number.melike_climate_valve_opening_degree',
               'number.bebek_climate_valve_opening_degree',
+              'number.banyo_climate_valve_opening_degree',
               'number.misafir_climate_valve_opening_degree'] 
             | map('states') 
             | select('is_number')
