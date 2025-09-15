@@ -196,8 +196,12 @@ views:
               top: 44%
               left: 44%
               font-size: 16px
-              color: yellow
               font-weight: bold
+            card_mod:
+              style: |
+                :host {
+                  color: {{ 'red' if is_state('climate.salon_climate', 'heat') else '#44739E' }};
+                  }
             tap_action:
               action: more-info
           - type: state-icon
@@ -418,8 +422,12 @@ views:
               top: 27%
               left: 70%
               font-size: 16px
-              color: yellow
               font-weight: bold
+            card_mod:
+              style: |
+                :host {
+                  color: {{ 'red' if is_state('climate.yatak_thermostat', 'heat') else '#44739E' }};
+                  }
           - type: state-label
             entity: climate.bebek_thermostat
             attribute: current_temperature
@@ -429,8 +437,12 @@ views:
               top: 27%
               left: 30%
               font-size: 16px
-              color: yellow
               font-weight: bold
+            card_mod:
+              style: |
+                :host {
+                  color: {{ 'red' if is_state('climate.bebek_thermostat', 'heat') else '#44739E' }};
+                  }
           - type: state-label
             entity: climate.banyo_thermostat
             attribute: current_temperature
@@ -440,8 +452,12 @@ views:
               top: 88%
               left: 76%
               font-size: 16px
-              color: yellow
               font-weight: bold
+            card_mod:
+              style: |
+                :host {
+                  color: {{ 'red' if is_state('climate.banyo_thermostat', 'heat') else '#44739E' }};
+                  }
           - type: state-label
             entity: climate.sercan_thermostat
             attribute: current_temperature
@@ -449,8 +465,12 @@ views:
               top: 82%
               left: 35%
               font-size: 16px
-              color: yellow
               font-weight: bold
+            card_mod:
+              style: |
+                :host {
+                  color: {{ 'red' if is_state('climate.sercan_thermostat', 'heat') else '#44739E' }};
+                  }
             tap_action:
               action: more-info
           - type: state-label
@@ -601,8 +621,12 @@ views:
               top: 25%
               left: 35%
               font-size: 16px
-              color: yellow
               font-weight: bold
+            card_mod:
+              style: |
+                :host {
+                  color: {{ 'red' if is_state('climate.misafir_thermostat', 'heat') else '#44739E' }};
+                  }
           - type: state-label
             entity: climate.melike_thermostat
             attribute: current_temperature
@@ -610,8 +634,12 @@ views:
               top: 74%
               left: 31%
               font-size: 16px
-              color: yellow
               font-weight: bold
+            card_mod:
+              style: |
+                :host {
+                  color: {{ 'red' if is_state('climate.melike_thermostat', 'heat') else '#44739E' }};
+                  }
             tap_action:
               action: more-info
           - type: state-icon
@@ -637,8 +665,12 @@ views:
               top: 65%
               left: 85%
               font-size: 16px
-              color: yellow
               font-weight: bold
+            card_mod:
+              style: |
+                :host {
+                  color: {{ '#44739E' if states('sensor.boiler_curburnpow') | int == 0 else 'red' }};
+                  }
             entity: sensor.boiler_curburnpow
           - type: state-icon
             style:
