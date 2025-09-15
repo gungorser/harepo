@@ -188,16 +188,16 @@ action:
                   - action: light.turn_on
                     data:
                       rgb_color:
-                        - 0
-                        - 0
                         - 255
+                        - 0
+                        - 0
                       effect: blink
                     target:
                       entity_id: "{{ lights }}"
                   - delay:
                       hours: 0
                       minutes: 0
-                      seconds: 3
+                      seconds: 2
                       milliseconds: 0
                   - action: scene.turn_on
                     data:
@@ -215,16 +215,16 @@ action:
                   - action: light.turn_on
                     data:
                       rgb_color:
+                        - 0
+                        - 0
                         - 255
-                        - 0
-                        - 0
                       effect: blink
                     target:
                       entity_id: "{{ lights }}"
                   - delay:
                       hours: 0
                       minutes: 0
-                      seconds: 3
+                      seconds: 2
                       milliseconds: 0
                   - action: scene.turn_on
                     data:
