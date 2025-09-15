@@ -184,7 +184,7 @@ action:
                   - action: script.blink_light
                     data:
                       lights: "{{ lights }}"
-                      rgb_color:
+                      color:
                         - 255
                         - 0
                         - 0
@@ -197,7 +197,7 @@ action:
                   - action: script.blink_light
                     data:
                       lights: "{{ lights }}"
-                      rgb_color:
+                      color:
                         - 0
                         - 0
                         - 255

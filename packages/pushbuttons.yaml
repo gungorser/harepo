@@ -13,6 +13,7 @@ script:
       - action: light.turn_on
         target:
           entity_id: "{{ lights }}"
+      - delay: .5
       - action: scene.create
         data:
           scene_id: blink_scene_2
@@ -26,14 +27,11 @@ script:
           effect: blink
         target:
           entity_id: "{{ lights }}"
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 2
-          milliseconds: 0
+      - delay: 2
       - action: scene.turn_on
         data:
           entity_id: scene.blink_scene_2
+      - delay: .5
       - action: scene.turn_on
         data:
           entity_id: scene.blink_scene_1
