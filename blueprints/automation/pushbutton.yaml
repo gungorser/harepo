@@ -181,54 +181,26 @@ action:
                     metadata: {}
                     data: {}
                     target: "{{ {'entity_id': climates} }}"
-                  - action: scene.create
+                  - action: script.blink_light
                     data:
-                      scene_id: climate_scene
-                      snapshot_entities: "{{ lights }}"
-                  - action: light.turn_on
-                    data:
+                      lights: "{{ lights }}"
                       rgb_color:
                         - 255
                         - 0
                         - 0
-                      effect: blink
-                    target:
-                      entity_id: "{{ lights }}"
-                  - delay:
-                      hours: 0
-                      minutes: 0
-                      seconds: 2
-                      milliseconds: 0
-                  - action: scene.turn_on
-                    data:
-                      entity_id: scene.climate_scene
               - conditions: []
                 sequence:
                   - action: climate.turn_off
                     metadata: {}
                     data: {}
                     target: "{{ {'entity_id': climates} }}"
-                  - action: scene.create
+                  - action: script.blink_light
                     data:
-                      scene_id: climate_scene
-                      snapshot_entities: "{{ lights }}"
-                  - action: light.turn_on
-                    data:
+                      lights: "{{ lights }}"
                       rgb_color:
                         - 0
                         - 0
                         - 255
-                      effect: blink
-                    target:
-                      entity_id: "{{ lights }}"
-                  - delay:
-                      hours: 0
-                      minutes: 0
-                      seconds: 2
-                      milliseconds: 0
-                  - action: scene.turn_on
-                    data:
-                      entity_id: scene.climate_scene
       - conditions:
           - condition: template
             value_template: >-

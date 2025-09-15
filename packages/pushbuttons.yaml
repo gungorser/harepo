@@ -1,3 +1,43 @@
+script:
+  blink_light:
+    fields:
+      lights:
+        description: "The light entities to blink"
+      color:
+        description: "the color to blink"
+    sequence:
+      - action: scene.create
+        data:
+          scene_id: blink_scene_1
+          snapshot_entities: "{{ lights }}"
+      - action: light.turn_on
+        target:
+          entity_id: "{{ lights }}"
+      - action: scene.create
+        data:
+          scene_id: blink_scene_2
+          snapshot_entities: "{{ lights }}"
+      - action: light.turn_on
+        data:
+          rgb_color:
+            - 255
+            - 0
+            - 0
+          effect: blink
+        target:
+          entity_id: "{{ lights }}"
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 2
+          milliseconds: 0
+      - action: scene.turn_on
+        data:
+          entity_id: scene.blink_scene_2
+      - action: scene.turn_on
+        data:
+          entity_id: scene.blink_scene_1
+
 automation:
   # Blueprint based automations
   - id: "bahce_pushbutton"
