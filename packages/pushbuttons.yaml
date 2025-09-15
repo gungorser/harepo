@@ -11,6 +11,8 @@ script:
           scene_id: blink_scene_1
           snapshot_entities: "{{ lights }}"
       - action: light.turn_on
+        data:
+          transition: .5
         target:
           entity_id: "{{ lights }}"
       - delay: .5
@@ -20,10 +22,7 @@ script:
           snapshot_entities: "{{ lights }}"
       - action: light.turn_on
         data:
-          rgb_color:
-            - 255
-            - 0
-            - 0
+          rgb_color: "{{ color }}"
           effect: blink
         target:
           entity_id: "{{ lights }}"
