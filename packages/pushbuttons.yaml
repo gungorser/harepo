@@ -104,10 +104,10 @@ automation:
       path: gungorser/pushbutton.yaml
       input:
         room: bebek
-        device: d194e781625697f06ff6a067a2b297ac
+        device: 85669db7ab596b90d81e78d86364a693
         button1: cover
-        button2: light
-        button3: none
+        button2: climate
+        button3: light
 
   - id: "sercan_pushbutton"
     alias: sercan_pushbutton
