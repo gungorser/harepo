@@ -109,6 +109,25 @@ views:
             tap_action:
               action: toggle
             entity: light.car_light
+          - &forecast
+            type: state-icon
+            style:
+              left: 90%
+              top: 5%
+              transform: translate(-50%, -50%) scale(2)
+            entity: weather.forecast_home
+          - &sercanlogo
+            type: state-icon
+            style:
+              left: 80%
+              top: 5%
+            entity: person.sercan
+          - &melikelogo
+            type: state-icon
+            style:
+              left: 70%
+              top: 5%
+            entity: person.melike
           - type: state-icon
             entity: light.koridor0_light
             style:
@@ -349,7 +368,7 @@ views:
               "on": opacity(100%)
               "off": opacity(30%)
           - type: image
-            entity: light.gardirop_light
+            entity: light.bebek_light
             style:
               left: 50%
               top: 50%
@@ -407,7 +426,7 @@ views:
             tap_action:
               action: toggle
           - type: state-icon
-            entity: light.gardirop_light
+            entity: light.bebek_light
             style:
               left: 33%
               top: 40%
@@ -529,6 +548,9 @@ views:
               left: 81%
               top: 62%
             icon: mdi:blinds-horizontal-closed
+          - <<: *forecast
+          - <<: *sercanlogo
+          - <<: *melikelogo
   - title: Kat2
     path: floor-2
     badges: []
@@ -681,3 +703,6 @@ views:
               action: more-info
             tap_action:
               action: toggle
+          - <<: *forecast
+          - <<: *sercanlogo
+          - <<: *melikelogo
