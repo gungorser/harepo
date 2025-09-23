@@ -405,6 +405,15 @@ views:
             double_tap_action:
               action: more-info
           - type: state-icon
+            entity: light.kaan_light
+            style:
+              left: 50%
+              top: 15%
+            tap_action:
+              action: toggle
+            double_tap_action:
+              action: more-info
+          - type: state-icon
             entity: light.banyo_light
             style:
               left: 68%
