@@ -209,7 +209,7 @@ views:
               action: more-info
             entity: vacuum.xiaomi_c102gl_9267_robot_cleaner
           - type: state-label
-            entity: climate.salon_climate
+            entity: climate.thermostat_hc1
             attribute: current_temperature
             style:
               top: 44%
@@ -219,7 +219,7 @@ views:
             card_mod:
               style: |
                 :host {
-                  color: {{ 'red' if is_state('climate.salon_climate', 'heat') else '#44739E' }};
+                  color: {{ 'red' if is_state('climate.thermostat_hc1', 'heat') else '#44739E' }};
                   }
             tap_action:
               action: more-info
