@@ -1,3 +1,78 @@
+input_text:
+  prev_sunrise:
+    initial: "{{state_attr('sun.sun', 'next_rising')}}"
+
+script:
+  cover_schedule_get_cover_position:
+    fields:
+      event_time:
+        description: "Time in string format"
+      room_name:
+        description: "Room name"
+    sequence:
+      - variables:
+          prev_sunrise: "{{ states('input_text.prev_sunrise') }}"
+          next_sunrise: "{{ state_attr('sun.sun', 'next_rising') }}"
+          next_sunset: "{{ state_attr('sun.sun', 'next_setting') }}"
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ as_datetime(next_sunrise) > as_datetime(next_sunset) }}"
+            sequence:
+              - action: calendar.get_events
+                target:
+                  entity_id: >-
+                    {{ states.calendar | map(attribute='entity_id') | list }}
+                data:
+                  start_date_time: "{{ event_time | as_datetime }}"
+                  duration:
+                    hours: 0
+                    minutes: 0
+                    seconds: 1
+                response_variable: events
+              - variables:
+                  cover_position: >
+                    {% set ns = namespace(found_events=[]) %}
+                    {% for event in events.values()
+                                    | map(attribute="events")
+                                    | sum(start=[])
+                                    | list %}
+                      {% if event.start | as_datetime < prev_sunrise | as_datetime 
+                        and event.end | as_datetime > prev_sunrise | as_datetime 
+                        and (event.description | from_json)["room_name"] == room_name %}
+                          {% set ns.found_events = ns.found_events + [event] %}
+                      {% endif%}
+                    {% endfor %}
+                    {{ { 'result': ns.found_events | count == 0} }}
+        default:
+          - variables:
+              cover_position: "{{ {'result': false} }}"
+      - stop:
+        response_variable: cover_position
+  cover_schedule_set_cover_position:
+    fields:
+      room_id:
+        description: "Room id"
+      position:
+        description: "True for open, false for close"
+    sequence:
+      - choose:
+          - conditions:
+              - condition: template
+                value_template: "{{ position }}"
+            sequence:
+              - action: cover.open_cover
+                metadata: {}
+                data: {}
+                target:
+                  area_id: "{{ room_id }}"
+          - conditions:
+            sequence:
+              - action: cover.close_cover
+                metadata: {}
+                data: {}
+                target:
+                  area_id: "{{ room_id }}"
 automation:
   - id: cover_schedule
     alias: cover_schedule
@@ -11,6 +86,10 @@ automation:
         event: sunrise
         offset: 0
         id: sunrise
+      - trigger: sun
+        event: sunrise
+        offset: -10
+        id: pre_sunrise
       - trigger: calendar
         entity_id: calendar.sercan
         event: end
@@ -32,110 +111,43 @@ automation:
           - conditions:
               - condition: trigger
                 id:
+                  - pre_sunrise
+            sequence:
+              - action: input_text.set_value
+                data:
+                  entity_id: input_text.prev_sunrise
+                  value: "{{ state_attr('sun.sun', 'next_rising') }}"
+          - conditions:
+              - condition: trigger
+                id:
                   - event_end
             sequence:
-              - action: calendar.get_events
-                target:
-                  entity_id: >-
-                    {{ states.calendar | map(attribute='entity_id') | list }}
+              - variables:
+                  room_name: "{{ (trigger.calendar_event.description | from_json)['room_name'] }}"
+              - action: script.cover_schedule_get_cover_position
                 data:
-                  start_date_time: >
-                    {% set next_rising = as_datetime(state_attr('sun.sun', 'next_rising')) %}
-                    {{next_rising - timedelta(days=1) }}
-                  duration:
-                    hours: 0
-                    minutes: 0
-                    seconds: 1
-                response_variable: sunrise_events
-              - action: calendar.get_events
-                target:
-                  entity_id: >-
-                    {{ states.calendar | map(attribute='entity_id') | list }}
+                  event_time: "{{ trigger.calendar_event.end }}"
+                  room_name: "{{ room_name }}"
+                response_variable: is_open
+              - action: script.cover_schedule_set_cover_position
                 data:
-                  start_date_time: "{{ trigger.calendar_event.end }}"
-                  duration:
-                    hours: 0
-                    minutes: 0
-                    seconds: 1
-                response_variable: after_events
-              - action: cover.open_cover
-                metadata: {}
-                data: {}
-                target: >
-                  {% set current_area_id = (trigger.calendar_event.description | from_json).room_name | area_id %}
-                  {# Check if current event is an sunrise event #}
-                  {% if sunrise_events.values()  
-                    | map(attribute='events') 
-                    | sum(start=[]) 
-                    | selectattr('summary', 'eq', trigger.calendar_event.summary)
-                    | selectattr('description', 'eq', trigger.calendar_event.description)
-                    | selectattr('start', 'eq', trigger.calendar_event.start)
-                    | selectattr('end', 'eq', trigger.calendar_event.end)
-                    | list %}
-                    {# Search all after events, which are also a sunrise event #}
-                    {% set ns = namespace(after_sunrise_events=[]) %}
-                    {% for after_event in after_events.values()  
-                        | map(attribute='events') 
-                        | sum(start=[]) 
-                        | list %}
-                      {% for sunrise_event in sunrise_events.values()  
-                          | map(attribute='events') 
-                          | sum(start=[]) 
-                          | list %}
-                        {% set desc = after_event.description | from_json %}
-                        {% if desc.room_name | area_id == current_area_id 
-                          and after_event.summary == sunrise_event.summary 
-                          and after_event.description == sunrise_event.description 
-                          and after_event.start == sunrise_event.end 
-                          and after_event.end == sunrise_event.end %}
-                          {# Both after and sunrise events are found #}
-                          {% set ns.after_sunrise_events = ns.after_sunrise_events + [after_event] %}
-                        {% endif %}
-                      {% endfor %}
-                    {% endfor %}
-                    {{ { "area_id": [] if ns.after_sunrise_events else [current_area_id] } }}
-                  {% else %}
-                    {{ { "area_id": [] } }}
-                  {% endif %}
-          - conditions:
-              - condition: trigger
-                id:
-                  - sunset
-            sequence:
-              - action: cover.close_cover
-                metadata: {}
-                data: {}
-                target: "{{ {'area_id': areas() | list} }}"
-          - conditions:
-              - condition: trigger
-                id:
-                  - sunrise
-            sequence:
-              - action: calendar.get_events
-                target:
-                  entity_id: >-
-                    {{ states.calendar | map(attribute='entity_id') | list }}
-                data:
-                  start_date_time: "{{ now() }}"
-                  duration:
-                    hours: 0
-                    minutes: 0
-                    seconds: 1
-                response_variable: sunrise_events
-              - action: cover.open_cover
-                metadata: {}
-                data: {}
-                target: >
-                  {{ { "area_id": areas()
-                        | reject("in", sunrise_events.values()  
-                          | map(attribute='events') 
-                          | sum(start=[]) 
-                          | map(attribute='description')
-                          | map('from_json')
-                          | map(attribute='room_name')
-                          | map('area_id')
-                          | unique | list)
-                        | list } }}
-      - delay: 120
-
+                  position: "{{ is_open.result }}"
+                  room_id: "{{ room_name | area_id }}"
+              - delay: 120
+        default:
+          - repeat:
+              count: "{{ areas() | length }}"
+              sequence:
+                - variables:
+                    room_id: "{{ areas()[repeat.index-1] }}"
+                - action: script.cover_schedule_get_cover_position
+                  data:
+                    event_time: "{{ now() }}"
+                    room_name: "{{ room_id | area_name }}"
+                  response_variable: is_open
+                - action: script.cover_schedule_set_cover_position
+                  data:
+                    position: "{{ is_open.result }}"
+                    room_id: "{{ room_id }}"
+          - delay: 120
     mode: queued

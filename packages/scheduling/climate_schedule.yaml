@@ -1,66 +1,11 @@
-automation:
-  - id: climate_schedule
-    alias: climate_schedule
-    description: ""
-    triggers:
-      - trigger: calendar
-        entity_id: calendar.sercan
-        event: start
-        offset: "0:0:0"
-      - trigger: calendar
-        entity_id: calendar.sercan
-        event: start
-        offset: "+0:30:0"
-      - trigger: calendar
-        entity_id: calendar.sercan
-        event: end
-        offset: "0:0:0"
-      - trigger: calendar
-        entity_id: calendar.sercan
-        event: end
-        offset: "-0:30:0"
-      - trigger: calendar
-        entity_id: calendar.melike
-        event: start
-        offset: "0:0:0"
-      - trigger: calendar
-        entity_id: calendar.melike
-        event: start
-        offset: "+0:30:0"
-      - trigger: calendar
-        entity_id: calendar.melike
-        event: end
-        offset: "0:0:0"
-      - trigger: calendar
-        entity_id: calendar.melike
-        event: end
-        offset: "-0:30:0"
-      - trigger: calendar
-        entity_id: calendar.misafir
-        event: start
-        offset: "0:0:0"
-      - trigger: calendar
-        entity_id: calendar.misafir
-        event: start
-        offset: "+0:30:0"
-      - trigger: calendar
-        entity_id: calendar.misafir
-        event: end
-        offset: "0:0:0"
-      - trigger: calendar
-        entity_id: calendar.misafir
-        event: end
-        offset: "-0:30:0"
-    conditions: []
-    actions:
-      - variables:
-          event_time: >-
-            {% if trigger.event == 'start' %}
-              {% set start_no_offset = trigger.calendar_event.start %}
-            {% else %}
-              {% set start_no_offset = trigger.calendar_event.end %}
-            {% endif %}
-            {{ as_local(as_datetime(start_no_offset)) + trigger.offset }}
+script:
+  climate_schedule_get_room_temperature:
+    fields:
+      event_time:
+        description: "Time in string format"
+      room_name:
+        description: "Room name"
+    sequence:
       - action: calendar.get_events
         target:
           entity_id: >-
@@ -71,61 +16,159 @@ automation:
             hours: 0
             minutes: 0
             seconds: 1
-        response_variable: after_events
-      - action: calendar.get_events
-        target:
-          entity_id: >-
-            {{ states.calendar | map(attribute='entity_id') | list }}
-        data:
-          start_date_time: "{{ (as_timestamp(event_time)-1) | timestamp_local }}"
-          duration:
-            hours: 0
-            minutes: 0
-            seconds: 1
-        response_variable: before_events
+        response_variable: events
       - variables:
-          room_id: >
-            {{ area_id((trigger.calendar_event.description | from_json)['room_name']) }}
-          room_temps: >
-            {# before ve after icin temps, ikisinin birlikte tutuldugu yer ise temps_all #}
-            {% set ns = namespace(temps=[], temps_all=[]) %} 
-            {% for seq, events in {'before': before_events, 'after': after_events}.items() %}
-              {# Temps sifirlanir #}
-              {% set ns.temps = [] %} 
-              {% set all_events = events.values() | map(attribute='events') | sum(start=[]) | list %}
-              {% for event in all_events %}
-                {% set desc = event.description | from_json %}
-                {# sadece bu eventin odasiyla ilgileniyoruz #}
-                {% if area_id(desc['room_name']) == room_id %}
-                  {% if 'sleep_temp' in desc and
-                      ((seq == 'before'  
-                      and as_timestamp(event.start) + 1800 < as_timestamp(event_time) 
-                      and as_timestamp(event.end) - 1800 >= as_timestamp(event_time))
-                      or (seq == 'after'  
-                      and as_timestamp(event.start) + 1800 <= as_timestamp(event_time) 
-                      and as_timestamp(event.end) - 1800 > as_timestamp(event_time))) %}
-                    {% set ns.temps = ns.temps + [ desc['sleep_temp'] ] %}
-                  {% else %}
-                    {% set ns.temps = ns.temps + [desc['temp']] %}
-                  {% endif %}
+          room_temp: >
+            {% set ns = namespace(temps=[]) %}
+            {% for event in events.values() 
+                            | map(attribute="events")
+                            | sum(start=[]) %}
+              {% set desc = event.description | from_json %}
+              {% if desc['room_name'] | area_id == room_name | area_id %}
+                {% if 'sleep_temp' in desc 
+                  and as_timestamp(event.start) + 1800 <= as_timestamp(event_time)
+                  and as_timestamp(event.end) - 1800 > as_timestamp(event_time) %}
+                  {% set ns.temps = ns.temps + [ desc['sleep_temp'] ] %}
+                {% else %}
+                  {% set ns.temps = ns.temps + [desc['temp']] %}
                 {% endif %}
-              {% endfor %}
-              {% set ns.temps_all = ns.temps_all + [ ns.temps ] %}
-            {% endfor %} 
-            {{ ns.temps_all }}
-          before: "{{ room_temps[0] | max if room_temps[0] else none }}"
-          after: "{{ room_temps[1] | max if room_temps[1] else none }}"
-      - if: "{{ before != after }}"
-        then:
-          - action: climate.set_temperature
-            data:
-              hvac_mode: "{{ 'heat' if after else 'off' }}"
-              temperature: "{{ after | int(7) }}"
-            target:
-              area_id: "{{ room_id }}"
-          - action: climate.set_hvac_mode
-            data:
-              hvac_mode: "{{ 'heat' if after else 'off' }}"
-            target:
-              area_id: "{{ room_id }}"
+              {% endif %}
+            {% endfor %}
+            {{ { 'result': ns.temps | max | default(None)} }}
+      - stop:
+        response_variable: room_temp
+  climate_schedule_set_room_temperature:
+    fields:
+      temperature:
+        description: "Temperature to set to, None if disabled"
+      room_id:
+        description: "Id of the room to set"
+    sequence:
+      - action: climate.set_temperature
+        data:
+          hvac_mode: "{{ 'heat' if temperature else 'off' }}"
+          temperature: "{{ temperature | int(7) }}"
+        target:
+          area_id: "{{ room_id }}"
+      - action: climate.set_hvac_mode
+        data:
+          hvac_mode: "{{ 'heat' if temperature else 'off' }}"
+        target:
+          area_id: "{{ room_id }}"
+automation:
+  - id: climate_schedule
+    alias: climate_schedule
+    description: ""
+    triggers:
+      - trigger: calendar
+        entity_id: calendar.sercan
+        event: start
+        id: start
+        offset: "0:0:0"
+      - trigger: calendar
+        entity_id: calendar.sercan
+        event: start
+        id: start
+        offset: "+0:30:0"
+      - trigger: calendar
+        entity_id: calendar.sercan
+        event: end
+        id: end
+        offset: "0:0:0"
+      - trigger: calendar
+        entity_id: calendar.sercan
+        event: end
+        id: end
+        offset: "-0:30:0"
+      - trigger: calendar
+        entity_id: calendar.melike
+        event: start
+        id: start
+        offset: "0:0:0"
+      - trigger: calendar
+        entity_id: calendar.melike
+        event: start
+        id: start
+        offset: "+0:30:0"
+      - trigger: calendar
+        entity_id: calendar.melike
+        event: end
+        id: end
+        offset: "0:0:0"
+      - trigger: calendar
+        entity_id: calendar.melike
+        event: end
+        id: end
+        offset: "-0:30:0"
+      - trigger: calendar
+        entity_id: calendar.misafir
+        event: start
+        id: start
+        offset: "0:0:0"
+      - trigger: calendar
+        entity_id: calendar.misafir
+        event: start
+        id: start
+        offset: "+0:30:0"
+      - trigger: calendar
+        entity_id: calendar.misafir
+        event: end
+        id: end
+        offset: "0:0:0"
+      - trigger: calendar
+        entity_id: calendar.misafir
+        event: end
+        id: end
+        offset: "-0:30:0"
+    conditions: []
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id:
+                  - start
+                  - end
+            sequence:
+              - variables:
+                  room_name: >
+                    {{ area_id((trigger.calendar_event.description | from_json)['room_name']) }}
+                  event_time: >-
+                    {% if trigger.event == 'start' %}
+                      {% set start_no_offset = trigger.calendar_event.start %}
+                    {% else %}
+                      {% set start_no_offset = trigger.calendar_event.end %}
+                    {% endif %}
+                    {{ start_no_offset | as_datetime | as_local + trigger.offset }}
+              - action: script.climate_schedule_get_room_temperature
+                data:
+                  event_time: "{{ (event_time | as_timestamp - 1) | as_datetime }}"
+                  room_name: "{{ room_name }}"
+                response_variable: before
+              - action: script.climate_schedule_get_room_temperature
+                data:
+                  event_time: "{{ event_time }}"
+                  room_name: "{{ room_name }}"
+                response_variable: after
+              - if: "{{ before.result != after.result }}"
+                then:
+                  - action: script.climate_schedule_set_room_temperature
+                    data:
+                      temperature: "{{ after.result }}"
+                      room_id: "{{ room_name | area_id }}"
+        default:
+          - repeat:
+              count: "{{ areas() | length }}"
+              sequence:
+                - variables:
+                    room_id: "{{ areas()[repeat.index-1] }}"
+                - action: script.climate_schedule_get_room_temperature
+                  data:
+                    event_time: "{{ now() }}"
+                    room_name: "{{ room_id | area_name }}"
+                  response_variable: room_temp
+                - action: script.climate_schedule_set_room_temperature
+                  data:
+                    temperature: "{{ room_temp.result }}"
+                    room_id: "{{ room_id }}"
+
     mode: queued
