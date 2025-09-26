@@ -131,7 +131,7 @@ automation:
             sequence:
               - variables:
                   room_name: >
-                    {{ area_id((trigger.calendar_event.description | from_json)['room_name']) }}
+                    {{ (trigger.calendar_event.description | from_json)['room_name'] }}
                   event_time: >-
                     {% if trigger.event == 'start' %}
                       {% set start_no_offset = trigger.calendar_event.start %}
