@@ -6,21 +6,24 @@ blueprint:
     pidvalue:
       name: PID Value
       description: PID value of the virtual thermostat
-      default: ""
+      multiple: true
+      default: []
       selector:
         entity:
           domain: input_number
     valve_opening:
       name: Valve Value Opening
       description: physical state of sonoff trv valve
-      default: ""
+      multiple: true
+      default: []
       selector:
         entity:
           domain: number
     valve_closing:
       name: Valve Value Closing
       description: physical state of sonoff trv valve
-      default: ""
+      multiple: true
+      default: []
       selector:
         entity:
           domain: number
