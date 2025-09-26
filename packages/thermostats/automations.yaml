@@ -64,3 +64,11 @@ automation:
         valve_closing: number.yatak_climate_valve_closing_degree
         valve: climate.yatak_climate
         thermostat: climate.yatak_thermostat
+
+  - alias: "salon thermostat automation"
+    id: "salon_thermostat_automation"
+    use_blueprint:
+      path: gungorser/thermostat.yaml
+      input:
+        valve: climate.thermostat_hc1
+        thermostat: climate.salon_thermostat

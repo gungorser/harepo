@@ -47,3 +47,10 @@ climate:
     unique_id: yatak_thermostat
     heater: input_number.yatak_thermostat
     target_sensor: sensor.yatak_thermostat
+
+  - <<: *thermostat_base
+    name: salon_thermostat
+    unique_id: salon_thermostat
+    heater: switch.koridor0_socket
+    target_sensor: sensor.thermostat_hc1_currtemp
+    pwm: 00:15:00
