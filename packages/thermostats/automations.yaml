@@ -1,0 +1,66 @@
+automation:
+  - alias: "sercan thermostat automation"
+    id: "sercan_thermostat_automation"
+    use_blueprint:
+      path: gungorser/thermostat.yaml
+      input:
+        pidvalue: input_number.sercan_thermostat
+        valve_opening: number.sercan_climate_valve_opening_degree
+        valve_closing: number.sercan_climate_valve_closing_degree
+        valve: climate.sercan_climate
+        thermostat: climate.sercan_thermostat
+
+  - alias: "misafir thermostat automation"
+    id: "misafir_thermostat_automation"
+    use_blueprint:
+      path: gungorser/thermostat.yaml
+      input:
+        pidvalue: input_number.misafir_thermostat
+        valve_opening: number.misafir_climate_valve_opening_degree
+        valve_closing: number.misafir_climate_valve_closing_degree
+        valve: climate.misafir_climate
+        thermostat: climate.misafir_thermostat
+
+  - alias: "bebek thermostat automation"
+    id: "bebek_thermostat_automation"
+    use_blueprint:
+      path: gungorser/thermostat.yaml
+      input:
+        pidvalue: input_number.bebek_thermostat
+        valve_opening: number.bebek_climate_valve_opening_degree
+        valve_closing: number.bebek_climate_valve_closing_degree
+        valve: climate.bebek_climate
+        thermostat: climate.bebek_thermostat
+
+  - alias: "melike thermostat automation"
+    id: "melike_thermostat_automation"
+    use_blueprint:
+      path: gungorser/thermostat.yaml
+      input:
+        pidvalue: input_number.melike_thermostat
+        valve_opening: number.melike_climate_valve_opening_degree
+        valve_closing: number.melike_climate_valve_closing_degree
+        valve: climate.melike_climate
+        thermostat: climate.melike_thermostat
+
+  - alias: "banyo thermostat automation"
+    id: "banyo_thermostat_automation"
+    use_blueprint:
+      path: gungorser/thermostat.yaml
+      input:
+        pidvalue: input_number.banyo_thermostat
+        valve_opening: number.banyo_climate_valve_opening_degree
+        valve_closing: number.banyo_climate_valve_closing_degree
+        valve: climate.banyo_climate
+        thermostat: climate.banyo_thermostat
+
+  - alias: "yatak thermostat automation"
+    id: "yatak_thermostat_automation"
+    use_blueprint:
+      path: gungorser/thermostat.yaml
+      input:
+        pidvalue: input_number.yatak_thermostat
+        valve_opening: number.yatak_climate_valve_opening_degree
+        valve_closing: number.yatak_climate_valve_closing_degree
+        valve: climate.yatak_climate
+        thermostat: climate.yatak_thermostat
