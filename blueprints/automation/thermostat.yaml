@@ -17,7 +17,7 @@ blueprint:
         entity:
           domain: number
       condition:
-        - input: numeric_heater
+        - input: pidvalue
           not_null: true
     valve_closing:
       name: Valve Value Closing
@@ -26,7 +26,7 @@ blueprint:
         entity:
           domain: number
       condition:
-        - input: numeric_heater
+        - input: pidvalue
           not_null: true
     valve:
       name: Climate entity
