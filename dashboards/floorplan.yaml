@@ -209,7 +209,7 @@ views:
               action: more-info
             entity: vacuum.xiaomi_c102gl_9267_robot_cleaner
           - type: state-label
-            entity: climate.thermostat_hc1
+            entity: climate.salon_thermostat
             attribute: current_temperature
             style:
               top: 44%
