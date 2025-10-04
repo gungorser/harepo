@@ -1,0 +1,54 @@
+automation:
+  - alias: "thermostat_switch"
+    id: "thermostat_switch"
+    description: ""
+    triggers:
+      - value_template: |-
+          {{ ['climate.sercan_thermostat',
+              'climate.yatak_thermostat',
+              'climate.melike_thermostat',
+              'climate.bebek_thermostat',
+              'climate.banyo_thermostat',
+              'climate.misafir_thermostat',
+              'climate.salon_thermostat'] 
+              | map('state_attr', 'hvac_action') 
+              | map('attr', 'value')
+              | select('eq', 'heating') 
+              | list | count > 0 }}
+        trigger: template
+        id: heat
+      - value_template: |-
+          {{ ['climate.sercan_thermostat',
+              'climate.yatak_thermostat',
+              'climate.melike_thermostat',
+              'climate.bebek_thermostat',
+              'climate.banyo_thermostat',
+              'climate.misafir_thermostat',
+              'climate.salon_thermostat'] 
+              | map('state_attr', 'hvac_action') 
+              | map('attr', 'value')
+              | select('eq', 'heating') 
+              | list | count == 0 }}
+        trigger: template
+        id: "off"
+    conditions: []
+    actions:
+      - choose:
+          - conditions:
+              - condition: trigger
+                id:
+                  - heat
+            sequence:
+              - action: switch.turn_on
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: switch.koridor2_switch
+          - conditions: []
+            sequence:
+              - action: switch.turn_off
+                metadata: {}
+                data: {}
+                target:
+                  entity_id: switch.koridor2_switch
+    mode: restart
