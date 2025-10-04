@@ -7,7 +7,7 @@ automation:
       - action: smart_thermostat.set_pid_gain
         data:
           kp: 3
-          ki: 1
+          ki: 0.02
           kd: 0
         target:
           entity_id: climate.sercan_thermostat
@@ -15,7 +15,7 @@ automation:
       - action: smart_thermostat.set_pid_gain
         data:
           kp: 3
-          ki: 1
+          ki: 0.02
           kd: 0
         target:
           entity_id: climate.misafir_thermostat
@@ -23,7 +23,7 @@ automation:
       - action: smart_thermostat.set_pid_gain
         data:
           kp: 3
-          ki: 1
+          ki: 0.02
           kd: 0
         target:
           entity_id: climate.bebek_thermostat
@@ -31,7 +31,7 @@ automation:
       - action: smart_thermostat.set_pid_gain
         data:
           kp: 3
-          ki: 1
+          ki: 0.02
           kd: 0
         target:
           entity_id: climate.melike_thermostat
@@ -39,7 +39,7 @@ automation:
       - action: smart_thermostat.set_pid_gain
         data:
           kp: 3
-          ki: 1
+          ki: 0.02
           kd: 0
         target:
           entity_id: climate.banyo_thermostat
@@ -47,9 +47,17 @@ automation:
       - action: smart_thermostat.set_pid_gain
         data:
           kp: 3
-          ki: 1
+          ki: 0.02
           kd: 0
         target:
           entity_id: climate.yatak_thermostat
+
+      - action: smart_thermostat.set_pid_gain
+        data:
+          kp: 0.3
+          ki: 0.002
+          kd: 0
+        target:
+          entity_id: climate.salon_thermostat
 
     mode: single

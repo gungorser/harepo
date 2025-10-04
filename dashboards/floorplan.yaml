@@ -219,7 +219,7 @@ views:
             card_mod:
               style: |
                 :host {
-                  color: {{ 'red' if is_state('climate.thermostat_hc1', 'heat') else '#44739E' }};
+                  color: {{ 'red' if is_state('climate.salon_thermostat', 'heat') else '#44739E' }};
                   }
             tap_action:
               action: more-info
@@ -672,15 +672,6 @@ views:
                   color: {{ 'red' if is_state('climate.melike_thermostat', 'heat') else '#44739E' }};
                   }
             tap_action:
-              action: more-info
-          - type: state-icon
-            entity: switch.koridor2_switch
-            style:
-              left: 77%
-              top: 66%
-            tap_action:
-              action: none
-            hold_action:
               action: more-info
           - type: state-icon
             style:

@@ -21,8 +21,10 @@ script:
             sequence:
               - action: calendar.get_events
                 target:
-                  entity_id: >-
-                    {{ states.calendar | map(attribute='entity_id') | list }}
+                  entity_id: 
+                    - calendar.sercan
+                    - calendar.melike
+                    - calendar.misafir
                 data:
                   start_date_time: "{{ event_time | as_datetime }}"
                   duration:
