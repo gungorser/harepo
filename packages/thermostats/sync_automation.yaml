@@ -7,6 +7,7 @@ automation:
         pidvalue: input_number.sercan_thermostat
         valve_opening: number.sercan_climate_valve_opening_degree
         valve_closing: number.sercan_climate_valve_closing_degree
+        valve_min: 10
         valve: climate.sercan_climate
         thermostat: climate.sercan_thermostat
 

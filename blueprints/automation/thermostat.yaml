@@ -77,10 +77,10 @@ action:
             id: pidchange
         sequence:
           - variables:
+              valve_min: !input valve_min
               scaled_value: >
-                {% set min = !input valve_ min %}
-                {% set scale = (100 - min) / 100 %}
-                {{ min + (trigger.to_state.state | int * scale) }}
+                {% set scale = (100 - valve_min) / 100 %}
+                {{ valve_min + (trigger.to_state.state | int * scale) }}
           - action: number.set_value
             target:
               entity_id: !input valve_opening
