@@ -82,11 +82,11 @@ automation:
     triggers:
       - trigger: sun
         event: sunset
-        offset: 0
+        offset: 10
         id: sunset
       - trigger: sun
         event: sunrise
-        offset: 0
+        offset: 10
         id: sunrise
       - trigger: sun
         event: sunrise

@@ -4,6 +4,7 @@ climate:
     target_temp: 19
     keep_alive:
       minutes: 15
+    debug: true
     kp: 6
     ki: 2
     kd: 0
@@ -12,43 +13,44 @@ climate:
     min_temp: 7
     max_temp: 35
     sensor_stall: 0
+    force_off_state: false
 
   - <<: *thermostat_base
     name: sercan_thermostat
     unique_id: sercan_thermostat
     heater: input_number.sercan_thermostat
-    target_sensor: sensor.sercan_thermostat
+    target_sensor: sensor.sercan_sensor_temperature
 
   - <<: *thermostat_base
     name: misafir_thermostat
     unique_id: misafir_thermostat
     heater: input_number.misafir_thermostat
-    target_sensor: sensor.misafir_thermostat
+    target_sensor: sensor.misafir_sensor_temperature
 
   - <<: *thermostat_base
     name: bebek_thermostat
     unique_id: bebek_thermostat
     heater: input_number.bebek_thermostat
-    target_sensor: sensor.bebek_thermostat
+    target_sensor: sensor.bebek_sensor_temperature
 
   - <<: *thermostat_base
     name: melike_thermostat
     unique_id: melike_thermostat
     heater: input_number.melike_thermostat
-    target_sensor: sensor.melike_thermostat
+    target_sensor: sensor.melike_sensor_temperature
 
   - <<: *thermostat_base
     name: banyo_thermostat
     unique_id: banyo_thermostat
     heater: input_number.banyo_thermostat
-    target_sensor: sensor.banyo_thermostat
+    target_sensor: sensor.banyo_moisture_temperature
 
   - <<: *thermostat_base
     name: yatak_thermostat
     unique_id: yatak_thermostat
     heater: input_number.yatak_thermostat
-    target_sensor: sensor.yatak_thermostat
-    
+    target_sensor: sensor.yatak_sensor_temperature
+
   - <<: *thermostat_base
     name: salon_thermostat
     unique_id: salon_thermostat
