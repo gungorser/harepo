@@ -28,6 +28,14 @@ blueprint:
         entity:
           domain: number
           multiple: true
+    valve_min:
+      name: Valve min opening percentage
+      default: 0
+      selector:
+        min: 0
+        max: 100
+        step: 1
+        mode: box
     valve:
       name: Climate entity
       description: physical climate entity
@@ -67,16 +75,21 @@ action:
           - condition: trigger
             id: pidchange
         sequence:
+          - variables:
+              scaled_value: >
+                {% set min = !input valve_ min %}
+                {% set scale = (100 - min) / 100 %}
+                {{ min + (trigger.to_state.state | int * scale) }}
           - action: number.set_value
             target:
               entity_id: !input valve_opening
             data:
-              value: "{{ trigger.to_state.state | int }}"
+              value: "{{ scaled_value | int }}"
           - action: number.set_value
             target:
               entity_id: !input valve_closing
             data:
-              value: "{{ 100 - (trigger.to_state.state | int) }}"
+              value: "{{ 100 - scaled_value | int }}"
       - conditions:
           - condition: trigger
             id: state_sync_automation
