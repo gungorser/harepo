@@ -32,10 +32,11 @@ blueprint:
       name: Valve min opening percentage
       default: 0
       selector:
-        min: 0
-        max: 100
-        step: 1
-        mode: box
+        number:
+          min: 0
+          max: 100
+          step: 1
+          mode: box
     valve:
       name: Climate entity
       description: physical climate entity
