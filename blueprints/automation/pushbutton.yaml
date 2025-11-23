@@ -50,49 +50,61 @@ trigger:
     device_id: !input device
     type: action
     subtype: "single"
-    id: single
   - platform: device
     domain: mqtt
     device_id: !input device
     type: action
     subtype: "double"
-    id: double
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "hold"
   - platform: device
     domain: mqtt
     device_id: !input device
     type: action
     subtype: "1_single"
-    id: 1_single
   - platform: device
     domain: mqtt
     device_id: !input device
     type: action
     subtype: "1_double"
-    id: 1_double
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "1_hold"
   - platform: device
     domain: mqtt
     device_id: !input device
     type: action
     subtype: "2_single"
-    id: 2_single
   - platform: device
     domain: mqtt
     device_id: !input device
     type: action
     subtype: "2_double"
-    id: 2_double
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "2_hold"
   - platform: device
     domain: mqtt
     device_id: !input device
     type: action
     subtype: "3_single"
-    id: 3_single
   - platform: device
     domain: mqtt
     device_id: !input device
     type: action
     subtype: "3_double"
-    id: 3_double
+  - platform: device
+    domain: mqtt
+    device_id: !input device
+    type: action
+    subtype: "3_hold"
 
 variables:
   room: !input room
@@ -118,16 +130,16 @@ variables:
       | list }}
   functions: >-
     {{ {
-      button1: {'single':'single', 'double':'double', '1_single':'single', '1_double': 'double'},
-      button2: {'2_single':'single', '2_double':'double'},
-      button3: {'3_single':'single', '3_double':'double'}
+      button1: {'single':'single', 'double':'double', 'hold': 'hold', '1_single':'single', '1_double': 'double', '1_hold': 'hold'},
+      button2: {'2_single':'single', '2_double':'double', '2_hold': 'hold'},
+      button3: {'3_single':'single', '3_double':'double', '3_hold': 'hold'}
     } }}
 action:
   - choose:
       - conditions:
           - condition: template
             value_template: >-
-              {{ 'light' in functions and trigger.id in functions['light'] }}
+              {{ 'light' in functions and trigger.payload in functions['light'] }}
         sequence:
           - choose:
               - conditions:
@@ -139,15 +151,36 @@ action:
                         | list | count > 0
                       }}
                 sequence:
-                  - action: light.turn_off
-                    metadata: {}
-                    data:
-                      transition: "{{transition}}"
-                    target: "{{ {'entity_id': lights} }}"
+                  - choose:
+                      - conditions:
+                          - condition: template
+                            value_template: >-
+                              {{ functions['light'][trigger.payload] == 'hold' }}
+                        sequence:
+                          - action: light.turn_on
+                            metadata: {}
+                            data:
+                              rgb_color: >
+                                {% set red = state_attr(lights[0], 'rgb_color')[0] %}
+                                {% set green = state_attr(lights[0], 'rgb_color')[1] %}
+                                {% set blue = state_attr(lights[0], 'rgb_color')[2] %}
+                                {% if green==0 and blue==0 %} 
+                                {{ [red, red, red] }}
+                                {% else %}
+                                {{ [red, 0, 0] }} 
+                                {% endif %}
+                              transition: 1
+                            target: "{{ {'entity_id': lights} }}"
+                      - default:
+                          - action: light.turn_off
+                            metadata: {}
+                            data:
+                              transition: "{{transition}}"
+                            target: "{{ {'entity_id': lights} }}"
               - conditions:
                   - condition: template
                     value_template: >-
-                      {{ functions['light'][trigger.id] == 'single' }}
+                      {{ functions['light'][trigger.payload] == 'single' }}
                 sequence:
                   - action: light.turn_on
                     metadata: {}
@@ -158,7 +191,7 @@ action:
               - conditions:
                   - condition: template
                     value_template: >-
-                      {{ functions['light'][trigger.id] == 'double' }}
+                      {{ functions['light'][trigger.payload] == 'double' }}
                 sequence:
                   - action: light.turn_on
                     metadata: {}
@@ -169,13 +202,13 @@ action:
       - conditions:
           - condition: template
             value_template: >-
-              {{ 'climate' in functions and trigger.id in functions['climate'] }}
+              {{ 'climate' in functions and trigger.payload in functions['climate'] }}
         sequence:
           - choose:
               - conditions:
                   - condition: template
                     value_template: >-
-                      {{ functions['climate'][trigger.id] == 'single'}}
+                      {{ functions['climate'][trigger.payload] == 'single'}}
                 sequence:
                   - action: climate.turn_on
                     metadata: {}
@@ -204,13 +237,13 @@ action:
       - conditions:
           - condition: template
             value_template: >-
-              {{ 'cover' in functions and trigger.id in functions['cover'] }}
+              {{ 'cover' in functions and trigger.payload in functions['cover'] }}
         sequence:
           - choose:
               - conditions:
                   - condition: template
                     value_template: >-
-                      {{ functions['cover'][trigger.id] == 'single'}}
+                      {{ functions['cover'][trigger.payload] == 'single'}}
                 sequence:
                   - action: cover.open_cover
                     metadata: {}
