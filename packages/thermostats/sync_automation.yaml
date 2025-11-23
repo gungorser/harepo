@@ -64,6 +64,7 @@ automation:
         valve_opening: number.yatak_climate_valve_opening_degree
         valve_closing: number.yatak_climate_valve_closing_degree
         valve: climate.yatak_climate
+        valve_min: 10
         thermostat: climate.yatak_thermostat
 
   - alias: "salon thermostat automation"

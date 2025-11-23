@@ -6,9 +6,9 @@ automation:
     actions:
       - action: smart_thermostat.set_pid_gain
         data:
-          kp: 50
-          ki: 0.05
-          kd: 80
+          kp: 16
+          ki: 0.01
+          kd: 4
         target:
           entity_id: climate.sercan_thermostat
 
