@@ -221,7 +221,10 @@ action:
                         - 255
                         - 0
                         - 0
-              - conditions: []
+              - conditions:
+                  - condition: template
+                    value_template: >-
+                      {{ functions['climate'][trigger.payload] == 'double'}}
                 sequence:
                   - action: climate.turn_off
                     metadata: {}

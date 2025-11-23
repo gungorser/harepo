@@ -200,7 +200,7 @@ automation:
       - domain: mqtt
         device_id: d3fd09e3b60a91f37e64b9137c1bba7b
         type: action
-        subtype: 1_hold
+        subtype: 2_hold
         trigger: device
     conditions: []
     actions:
