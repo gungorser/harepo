@@ -41,9 +41,10 @@ script:
                                     | list %}
                       {% if event.start | as_datetime < prev_sunrise | as_datetime 
                         and event.end | as_datetime > prev_sunrise | as_datetime 
-                        and (event.description | from_json)["room_name"] == room_name %}
+                        and (event.description | from_json)["room_name"] == room_name 
+                        and "sleep_temp" in (event.description | from_json) %}
                           {% set ns.found_events = ns.found_events + [event] %}
-                      {% endif%}
+                      {% endif %}
                     {% endfor %}
                     {{ { 'result': ns.found_events | count == 0} }}
         default:
