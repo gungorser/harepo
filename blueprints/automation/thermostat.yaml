@@ -129,17 +129,17 @@ action:
                 id: attr_sync_physical
         sequence:
           - delay: 5
-          - action: climate.set_hvac_mode
-            metadata: {}
-            target:
-              entity_id: !input thermostat
-            data:
-              hvac_mode: "{{states(trigger.entity_id)}}"
           - action: climate.set_temperature
             metadata: {}
             target:
               entity_id: !input thermostat
             data:
               temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
+          - action: climate.set_hvac_mode
+            metadata: {}
+            target:
+              entity_id: !input thermostat
+            data:
+              hvac_mode: "{{states(trigger.entity_id)}}"
           
 mode: restart

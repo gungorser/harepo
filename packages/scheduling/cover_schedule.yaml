@@ -43,7 +43,7 @@ script:
                         and event.end | as_datetime > prev_sunrise | as_datetime 
                         and (event.description | from_json)["room_name"] == room_name 
                         and "darkness" in (event.description | from_json) 
-                        and (event.description | from_json)["darkness"] = true %}
+                        and (event.description | from_json)["darkness"] == true %}
                           {% set ns.found_events = ns.found_events + [event] %}
                       {% endif %}
                     {% endfor %}
