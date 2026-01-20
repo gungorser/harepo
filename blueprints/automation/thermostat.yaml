@@ -95,6 +95,7 @@ action:
           - condition: trigger
             id: state_sync_automation
         sequence:
+          - delay: 5
           - if: "{{ trigger.to_state.context.user_id is not none }}"
             then:
               - action: climate.set_hvac_mode
@@ -114,10 +115,8 @@ action:
       - conditions:
           - condition: trigger
             id: state_sync_physical
-          - condition: template
-            value_template: >
-              {{ trigger.to_state.context.user_id is none }}
         sequence:
+          - delay: 5
           - action: climate.set_hvac_mode
             metadata: {}
             target:
@@ -128,6 +127,7 @@ action:
           - condition: trigger
             id: attr_sync_automation
         sequence:
+          - delay: 5
           - if: "{{ trigger.to_state.context.user_id is not none }}"
             then:
               - action: climate.set_temperature
@@ -145,14 +145,12 @@ action:
       - conditions:
           - condition: trigger
             id: attr_sync_physical
-          - condition: template
-            value_template: >
-              {{ trigger.to_state.context.user_id is none }}
         sequence:
+          - delay: 5
           - action: climate.set_temperature
             metadata: {}
             target:
               entity_id: !input thermostat
             data:
               temperature: "{{state_attr(trigger.entity_id, 'temperature') | float(0) }}"
-mode: queued
+mode: restart
