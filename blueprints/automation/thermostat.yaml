@@ -108,7 +108,7 @@ action:
               hvac_mode: >
                 {% set state = states(trigger.entity_id) %}
                 {{ "off" if state == "unknown" else state }}
-          - if: "{{ trigger.to_state.state == 'heat' }}"
+          - if: "{{ trigger.to_state.state == 'heat' and trigger.from_state.state != 'heat' }}"
             then: 
               - action: smart_thermostat.clear_integral
                 target:
