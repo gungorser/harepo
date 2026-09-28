@@ -24,3 +24,9 @@ lovelace:
       icon: mdi:calendar-clock
       show_in_sidebar: true
       filename: gungors/dashboards/program.yaml
+    floorplan3d-dashboard:
+      mode: yaml
+      title: Floorplan 3D
+      icon: mdi:home-lightbulb
+      show_in_sidebar: true
+      filename: gungors/dashboards/floorplan_3d.yaml

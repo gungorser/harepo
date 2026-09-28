@@ -1,0 +1,32 @@
+# Floorplan 3D dashboard: live-lit Blender renders of each floor (custom:gungors-floor-card from
+# the ha-gungors-cards HACS repository). The pictures (model.json + layer images) are build output
+# of the gungors_home Blender project, deployed to /config/www/gungors_floor/<floor>/.
+# Here, like on the floorplan dashboard, only the entities and their actions are set.
+#
+# Action standard (same as floorplan.yaml):
+#   lights: tap toggle (card default), hold more-info
+#   covers: tap script.cover_tap (moving -> stop, closed -> open, else close), hold more-info
+#   cover.garaj_door is not in Home Assistant yet: a slider that only moves the picture.
+
+views:
+  - title: Zemin Kat
+    path: zemin-kat
+    type: panel
+    cards:
+      - type: custom:gungors-floor-card
+        floor: zemin_kat
+        entities:
+          # covers
+          - entity: cover.salon_cover
+            tap_action: {action: perform-action, perform_action: script.cover_tap, data: {cover: cover.salon_cover}}
+          - entity: cover.garaj_door
+            slider: true
+          # lights
+          - light.salon_light
+          - light.garaj_light
+          - light.koridor0_light
+          - light.mutfak_light
+          - light.yemek_light
+          - light.car_light
+          - light.bahce_light_1
+          - light.bahce_light
