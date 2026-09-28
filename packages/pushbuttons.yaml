@@ -55,7 +55,7 @@ automation:
     use_blueprint:
       path: gungorser/pushbutton.yaml
       input:
-        room: corridor0
+        room: koridor0
         device: 11a1c6bc68faf4b5b988027ca757eb1b
         button1: none
         button2: light
@@ -79,7 +79,7 @@ automation:
     use_blueprint:
       path: gungorser/pushbutton.yaml
       input:
-        room: attic
+        room: koridor2
         device: 6c88534b8be990d5fe3cc0782ae96138
         button1: light
         button2: none
@@ -115,7 +115,7 @@ automation:
     use_blueprint:
       path: gungorser/pushbutton.yaml
       input:
-        room: melike_ofis
+        room: sercan
         device: d3fd09e3b60a91f37e64b9137c1bba7b
         button1: light
         button2: climate
@@ -130,7 +130,7 @@ automation:
         button1: cover
         button2: climate
         button3: light
-        room: bedroom
+        room: yatak
         device: 1d49a19304191ce333202639e9ed74d5
 
   - id: "misafir_pushbutton"
@@ -139,7 +139,7 @@ automation:
     use_blueprint:
       path: gungorser/pushbutton.yaml
       input:
-        room: sercan_ofis
+        room: misafir
         device: 7f94718f6e3179997e7f7f42c2b287c4
         button1: cover
         button2: climate
@@ -151,7 +151,7 @@ automation:
     use_blueprint:
       path: gungorser/pushbutton.yaml
       input:
-        room: guest_room
+        room: melike
         device: 325f6eeb70e622f7c6c41c53b80583e3
         button1: light
         button2: climate

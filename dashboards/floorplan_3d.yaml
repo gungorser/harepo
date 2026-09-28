@@ -1,6 +1,6 @@
 # Floorplan 3D dashboard: live-lit Blender renders of each floor (custom:gungors-floor-card from
-# the ha-gungors-cards HACS repository). The pictures (model.json + layer images) are build output
-# of the gungors_home Blender project, deployed to /config/www/gungors_floor/<floor>/.
+# the ha-dashboards HACS repository). The pictures (model.json + layer images) are build output
+# of the ha-floorplan Blender project, deployed to /config/www/gungors_floor/<floor>/.
 # Here, like on the floorplan dashboard, only the entities and their actions are set.
 #
 # Action standard (same as floorplan.yaml):
