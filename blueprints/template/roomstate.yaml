@@ -1,0 +1,25 @@
+blueprint:
+  name: Room State
+  description: >-
+    Switch that is on while any of the given entities is not off
+    (unavailable/unknown are skipped). Turning it off turns all of them off;
+    turning it on does nothing. Entities may include other roomstate switches.
+  domain: template
+  input:
+    entities:
+      name: Entities
+      description: Entities tracked and turned off by this switch (whitelist).
+      selector:
+        entity:
+          multiple: true
+  source_url: https://github.com/gungorser/harepo/blob/master/blueprints/template/roomstate.yaml
+variables:
+  entities: !input entities
+switch:
+  icon: mdi:home
+  state: >-
+    {{ entities | select('has_value') | reject('is_state', 'off') | list | count > 0 }}
+  turn_off:
+    - action: homeassistant.turn_off
+      target:
+        entity_id: "{{ entities }}"

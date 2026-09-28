@@ -8,13 +8,19 @@ lovelace:
   dashboards:
     roomstate-dashboard:
       mode: yaml
-      title: Rooms
-      icon: mdi:home
+      title: Gereksiz
+      icon: mdi:power
       show_in_sidebar: true
-      filename: gungors/dashboards/roomstate.yaml
+      filename: gungors/dashboards/unnecessary.yaml
     floorplan-dashboard:
       mode: yaml
       title: Floorplan
       icon: mdi:floor-plan
       show_in_sidebar: true
       filename: gungors/dashboards/floorplan.yaml
+    program-dashboard:
+      mode: yaml
+      title: Program
+      icon: mdi:calendar-clock
+      show_in_sidebar: true
+      filename: gungors/dashboards/program.yaml

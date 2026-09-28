@@ -1,3 +1,206 @@
+# Floorplan dashboard. Shared blocks are defined once under `anchors` (ignored by Lovelace)
+# and merged into elements with `<<:`. Merge is shallow: `style` is rebuilt per element
+# from the smaller style anchors plus its own position.
+# Room climates and lights use the parameterized button-card templates `room_climate`
+# and `room_light` (button_card_templates, below) instead of anchors.
+#
+# Action standard:
+#   light chips: tap toggle, hold more-info
+#   toggleable icons (fan, switch, valve): tap toggle, hold more-info
+#   covers: tap script.cover_tap (moving -> stop, closed -> open, else close), hold more-info
+#   room climate chips: tap more-info, hold heat <-> off
+#   labels (boiler): tap more-info
+#   other icons (tv, vacuums, weather, people): default (tap more-info)
+#   cameras: off -> tap turns on; on -> tap more-info, hold turns off
+# Covers: no `icon:` override, so HA shows the curtain/blind icon of the
+# device_class and the opening/closing arrows while moving. The tap_action
+# must repeat the entity id (the anchor can't reference the element's entity).
+# Climate chips: translucent, no icon; current temperature, target (or "kapalı") and
+# optional humidity; off/unavailable -> gray, on and heating -> red, on and idle -> green.
+# Light chips: a sun-like disc in the light's color (rgb_color; warm white for lights
+# without color), stronger and with a wider fading glow the higher the brightness;
+# off/unavailable -> small dim gray disc, no glow.
+
+button_card_templates:
+  room_climate:
+    variables:
+      humidity: null
+      mode: |
+        [[[
+          if (!entity || ['off', 'unavailable', 'unknown'].includes(entity.state)) return 'off';
+          return entity.attributes.hvac_action === 'heating' ? 'heat' : 'idle';
+        ]]]
+    show_name: false
+    show_state: false
+    show_icon: false
+    tap_action:
+      action: more-info
+    hold_action:
+      action: perform-action
+      perform_action: climate.set_hvac_mode
+      target:
+        entity_id: "[[[ return entity.entity_id; ]]]"
+      data:
+        hvac_mode: "[[[ return entity.state === 'off' ? 'heat' : 'off'; ]]]"
+    custom_fields:
+      temp: |
+        [[[
+          const t = entity.attributes.current_temperature;
+          return t == null ? '–' : `${Number(t).toFixed(1)}°`;
+        ]]]
+      sub: |
+        [[[
+          const h = variables.humidity ? states[variables.humidity] : null;
+          const hv = h && !isNaN(parseFloat(h.state)) ? ` · %${Math.round(parseFloat(h.state))}` : '';
+          if (variables.mode === 'off') return `kapalı${hv}`;
+          const tt = entity.attributes.temperature;
+          return `→ ${tt == null ? '–' : tt}°${hv}`;
+        ]]]
+    # Translucent chip on the dark floorplan: tinted background, colored border,
+    # light text shades so it stays readable over the image.
+    styles:
+      card:
+        - width: max-content
+        - padding: 3px 9px
+        - border-radius: 12px
+        - box-shadow: none
+        - background-color: "[[[ return {heat: 'rgba(226, 75, 74, 0.22)', idle: 'rgba(99, 153, 34, 0.22)', off: 'rgba(136, 135, 128, 0.18)'}[variables.mode]; ]]]"
+        - border: "[[[ return '1px solid ' + {heat: '#E24B4A', idle: '#639922', off: '#5F5E5A'}[variables.mode]; ]]]"
+      grid:
+        - grid-template-areas: '"temp" "sub"'
+        - grid-template-columns: auto
+        - justify-items: center
+      custom_fields:
+        temp:
+          - font-size: 15px
+          - font-weight: 500
+          - line-height: 1.15
+          - color: "[[[ return {heat: '#F7C1C1', idle: '#C0DD97', off: '#D3D1C7'}[variables.mode]; ]]]"
+        sub:
+          - font-size: 10px
+          - line-height: 1.15
+          - color: "[[[ return {heat: '#F09595', idle: '#97C459', off: '#B4B2A9'}[variables.mode]; ]]]"
+
+  room_light:
+    variables:
+      # [r, g, b] of the light, or null when it is off/unavailable.
+      rgb: |
+        [[[
+          if (!entity || entity.state !== 'on') return null;
+          return entity.attributes.rgb_color || [255, 200, 120];
+        ]]]
+      # Brightness 0..1 (on/off-only lights count as full).
+      level: |
+        [[[
+          if (!entity || entity.state !== 'on') return 0;
+          const b = entity.attributes.brightness;
+          return b == null ? 1 : Math.max(0.05, b / 255);
+        ]]]
+    show_name: false
+    show_state: false
+    show_icon: false
+    tap_action:
+      action: toggle
+    hold_action:
+      action: more-info
+    custom_fields:
+      sun: ""
+    styles:
+      card:
+        - width: 34px
+        - height: 34px
+        - padding: 0
+        - background: none
+        - border: none
+        - box-shadow: none
+        - overflow: visible
+      grid:
+        - grid-template-areas: '"sun"'
+        - grid-template-columns: 1fr
+        - grid-template-rows: 1fr
+        - place-items: center
+      custom_fields:
+        sun:
+          - border-radius: 50%
+          - transition: all 0.4s ease
+          - width: "[[[ return variables.rgb ? '16px' : '10px'; ]]]"
+          - height: "[[[ return variables.rgb ? '16px' : '10px'; ]]]"
+          - background-color: |
+              [[[
+                if (!variables.rgb) return 'rgba(136, 135, 128, 0.45)';
+                const [r, g, b] = variables.rgb;
+                return `rgba(${r}, ${g}, ${b}, ${(0.45 + 0.55 * variables.level).toFixed(2)})`;
+              ]]]
+          - border: "[[[ return variables.rgb ? 'none' : '1px solid #5F5E5A'; ]]]"
+          - box-shadow: |
+              [[[
+                if (!variables.rgb) return 'none';
+                const [r, g, b] = variables.rgb;
+                const l = variables.level;
+                const inner = `0 0 ${(4 + 10 * l).toFixed(1)}px ${(1 + 4 * l).toFixed(1)}px rgba(${r}, ${g}, ${b}, ${(0.35 + 0.45 * l).toFixed(2)})`;
+                const outer = `0 0 ${(10 + 28 * l).toFixed(1)}px ${(3 + 10 * l).toFixed(1)}px rgba(${r}, ${g}, ${b}, ${(0.08 + 0.22 * l).toFixed(2)})`;
+                return `${inner}, ${outer}`;
+              ]]]
+
+anchors:
+  overlay_style: &overlay_style
+    left: 50%
+    top: 50%
+    width: 100%
+    mix-blend-mode: screen
+    opacity: 50%
+  filter_15: &filter_15
+    "on": opacity(100%)
+    "off": opacity(15%)
+  filter_30: &filter_30
+    "on": opacity(100%)
+    "off": opacity(30%)
+  filter_50: &filter_50
+    "on": opacity(100%)
+    "off": opacity(50%)
+  overlay: &overlay
+    type: image
+    style: *overlay_style
+    state_filter: *filter_30
+  toggle_icon: &toggle_icon
+    type: state-icon
+    tap_action:
+      action: toggle
+    hold_action:
+      action: more-info
+  cover_icon: &cover_icon
+    type: state-icon
+    hold_action:
+      action: more-info
+  room_climate: &room_climate
+    type: custom:button-card
+    template: room_climate
+  room_light: &room_light
+    type: custom:button-card
+    template: room_light
+  label_font: &label_font
+    font-size: 16px
+    font-weight: bold
+  forecast: &forecast
+    type: state-icon
+    entity: weather.forecast_home
+    style:
+      left: 90%
+      top: 5%
+      transform: translate(-50%, -50%) scale(2)
+  sercan: &sercan
+    type: state-icon
+    entity: person.sercan
+    style:
+      left: 80%
+      top: 5%
+  melike: &melike
+    type: state-icon
+    entity: person.melike
+    style:
+      left: 70%
+      top: 5%
+
 views:
   - title: GİRİŞ
     badges: []
@@ -5,240 +208,76 @@ views:
       - type: picture-elements
         image: local/images/floorplan/kat0/dark.png
         elements:
-          - type: image
+          # light overlays
+          - <<: *overlay
             entity: light.salon_light
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat0/salon_light.png
-              "off": local/images/floorplan/kat0/salon_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(50%)
-          - type: image
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-            state_image:
-              "on": local/images/floorplan/kat0/car_light.png
-              "off": local/images/floorplan/kat0/car_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
+            image: local/images/floorplan/kat0/salon_light.png
+            state_filter: *filter_50
+          - <<: *overlay
             entity: light.car_light
-          - type: image
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat0/koridor0_light.png
-              "off": local/images/floorplan/kat0/koridor0_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
+            image: local/images/floorplan/kat0/car_light.png
+          - <<: *overlay
             entity: light.koridor0_light
-          - type: image
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat0/yemek_light.png
-              "off": local/images/floorplan/kat0/yemek_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
+            image: local/images/floorplan/kat0/koridor0_light.png
+          - <<: *overlay
             entity: light.yemek_light
-          - type: image
+            image: local/images/floorplan/kat0/yemek_light.png
+          - <<: *overlay
             entity: light.garaj_light
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat0/garaj_light.png
-              "off": local/images/floorplan/kat0/garaj_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
-          - type: image
+            image: local/images/floorplan/kat0/garaj_light.png
+          - <<: *overlay
             entity: light.mutfak_light
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat0/mutfak_light.png
-              "off": local/images/floorplan/kat0/mutfak_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
-          - type: image
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat0/bahce_light.png
-              "off": local/images/floorplan/kat0/bahce_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
+            image: local/images/floorplan/kat0/mutfak_light.png
+          - <<: *overlay
             entity: light.bahce_light_1
-          - type: state-icon
-            style:
-              left: 72%
-              top: 50%
-            tap_action:
-              action: toggle
+            image: local/images/floorplan/kat0/bahce_light.png
+          # lights
+          - <<: *room_light
             entity: light.car_light
-          - &forecast
-            type: state-icon
-            style:
-              left: 90%
-              top: 5%
-              transform: translate(-50%, -50%) scale(2)
-            entity: weather.forecast_home
-          - &sercanlogo
-            type: state-icon
-            style:
-              left: 80%
-              top: 5%
-            entity: person.sercan
-          - &melikelogo
-            type: state-icon
-            style:
-              left: 70%
-              top: 5%
-            entity: person.melike
-          - type: state-icon
+            style: {left: 72%, top: 50%}
+          - <<: *room_light
             entity: light.koridor0_light
-            style:
-              left: 46%
-              top: 52%
-            tap_action:
-              action: toggle
-            hold_action:
-              action: more-info
-          - type: state-icon
-            style:
-              left: 25%
-              top: 70%
-            tap_action:
-              action: toggle
-            hold_action:
-              action: more-info
+            style: {left: 46%, top: 52%}
+          - <<: *room_light
             entity: light.yemek_light
-          - type: state-icon
+            style: {left: 25%, top: 70%}
+          - <<: *room_light
             entity: light.garaj_light
-            style:
-              left: 73%
-              top: 76%
-            tap_action:
-              action: toggle
-            hold_action:
-              action: more-info
-          - type: state-icon
-            style:
-              left: 46%
-              top: 72%
-            tap_action:
-              action: toggle
+            style: {left: 73%, top: 76%}
+          - <<: *room_light
             entity: light.mutfak_light
-            icon: mdi:lightbulb
-            hold_action:
-              action: more-info
-          - type: state-icon
+            style: {left: 46%, top: 72%}
+          - <<: *room_light
             entity: light.salon_light
-            style:
-              left: 42%
-              top: 34%
-            tap_action:
-              action: toggle
-            double_tap_action:
-              action: more-info
-            hold_action:
-              action: more-info
-          - type: state-icon
-            style:
-              left: 37%
-              top: 84%
-            tap_action:
-              action: toggle
+            style: {left: 42%, top: 34%}
+          - <<: *room_light
             entity: light.bahce_light_1
-            hold_action:
-              action: more-info
-          - type: state-icon
-            style:
-              left: 57%
-              top: 84%
-            tap_action:
-              action: toggle
-            entity: valve.bahce_valve
-            hold_action:
-              action: more-info
-          - type: state-icon
-            style:
-              left: 20%
-              top: 37%
-            tap_action:
-              action: more-info
-            entity: media_player.salon_tv
-          - type: state-icon
-            style:
-              left: 21%
-              top: 44%
-            double_tap_action:
-              action: more-info
-            entity: vacuum.xiaomi_c102gl_9267_robot_cleaner
-          - type: state-label
-            entity: climate.salon_thermostat
-            attribute: current_temperature
-            style:
-              top: 44%
-              left: 44%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'red' if is_state('climate.salon_thermostat', 'heat') else '#44739E' }};
-                  }
-            tap_action:
-              action: more-info
-          - type: state-icon
-            entity: cover.salon_cover
-            style:
-              left: 30%
-              top: 18%
-            double_tap_action:
-              action: more-info
-            tap_action:
-              action: toggle
-          - type: state-icon
-            style:
-              left: 10%
-              top: 95%
+            style: {left: 37%, top: 84%}
+          - <<: *room_light
             entity: light.bahce_light
-            tap_action:
-              action: toggle
+            style: {left: 10%, top: 95%}
+          # icons
+          - *forecast
+          - *sercan
+          - *melike
+          - <<: *toggle_icon
+            entity: valve.bahce_valve
+            style: {left: 57%, top: 84%}
+          - type: state-icon
+            entity: media_player.salon_tv
+            style: {left: 20%, top: 37%}
+          - type: state-icon
+            entity: vacuum.xiaomi_c102gl_9267_robot_cleaner
+            style: {left: 21%, top: 44%}
+          # climate
+          - <<: *room_climate
+            entity: climate.salon_thermostat
+            style: {top: 44%, left: 44%}
+          - <<: *cover_icon
+            entity: cover.salon_cover
+            tap_action: {action: perform-action, perform_action: script.cover_tap, data: {cover: cover.salon_cover}}
+            style: {left: 30%, top: 18%}
+          # cameras
           - type: conditional
             title: camera.backyard off
             conditions:
@@ -247,6 +286,8 @@ views:
                 state_not: streaming
             elements:
               - type: state-icon
+                entity: camera.backyard
+                icon: mdi:cctv-off
                 tap_action:
                   action: perform-action
                   perform_action: camera.turn_on
@@ -254,12 +295,9 @@ views:
                     device_id: 2c981aaa4add512f53f9b132a7ba4149
                 hold_action:
                   action: none
-                entity: camera.backyard
-                icon: mdi:cctv-off
-                style:
-                  left: 10%
-                  top: 84%
+                style: {left: 10%, top: 84%}
           - type: conditional
+            title: camera.backyard on
             conditions:
               - condition: state
                 entity: camera.backyard
@@ -275,50 +313,44 @@ views:
                   perform_action: camera.turn_off
                   target:
                     device_id: 2c981aaa4add512f53f9b132a7ba4149
-                style:
-                  left: 10%
-                  top: 84%
-            title: camera.backyard on
+                style: {left: 10%, top: 84%}
           - type: conditional
+            title: camera.doorbell off
             conditions:
               - condition: state
                 entity: camera.doorbell
                 state_not: streaming
-            title: camera.doorbell off
             elements:
               - type: state-icon
                 entity: camera.doorbell
                 icon: mdi:cctv-off
-                hold_action:
-                  action: none
                 tap_action:
                   action: perform-action
                   perform_action: camera.turn_on
                   target:
                     device_id: 794213408a22e95b1d0799233ef0e625
-                style:
-                  left: 63%
-                  top: 50%
+                hold_action:
+                  action: none
+                style: {left: 63%, top: 50%}
           - type: conditional
+            title: camera.doorbell on
             conditions:
               - condition: state
                 entity: camera.doorbell
                 state: streaming
-            title: camera.doorbell on
             elements:
               - type: state-icon
                 entity: camera.doorbell
                 icon: mdi:cctv
+                tap_action:
+                  action: more-info
                 hold_action:
                   action: perform-action
                   perform_action: camera.turn_off
                   target:
                     device_id: 794213408a22e95b1d0799233ef0e625
-                tap_action:
-                  action: more-info
-                style:
-                  left: 63%
-                  top: 50%
+                style: {left: 63%, top: 50%}
+
   - title: Kat1
     path: floor-1
     badges: []
@@ -326,282 +358,89 @@ views:
       - type: picture-elements
         image: local/images/floorplan/kat1/dark.png
         elements:
-          - type: image
+          # light overlays
+          - <<: *overlay
             entity: light.yatak_light
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat1/yatak_light.png
-              "off": local/images/floorplan/kat1/yatak_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
-          - type: image
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-            state_image:
-              "on": local/images/floorplan/kat1/banyo_light.png
-              "off": local/images/floorplan/kat1/banyo_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(15%)
+            image: local/images/floorplan/kat1/yatak_light.png
+          - <<: *overlay
             entity: light.banyo_light
-          - type: image
+            image: local/images/floorplan/kat1/banyo_light.png
+            state_filter: *filter_15
+          - <<: *overlay
             entity: light.koridor1_light
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat1/koridor1_light.png
-              "off": local/images/floorplan/kat1/koridor1_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
-          - type: image
+            image: local/images/floorplan/kat1/koridor1_light.png
+          - <<: *overlay
             entity: light.bebek_light
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat1/bebek_light.png
-              "off": local/images/floorplan/kat1/bebek_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
-          - type: image
+            image: local/images/floorplan/kat1/bebek_light.png
+          - <<: *overlay
             entity: light.sercan_light
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat1/sercan_light.png
-              "off": local/images/floorplan/kat1/sercan_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
-          - type: state-icon
+            image: local/images/floorplan/kat1/sercan_light.png
+          # lights
+          - <<: *room_light
             entity: light.yatak_light
-            style:
-              left: 66%
-              top: 36%
-            tap_action:
-              action: toggle
-            double_tap_action:
-              action: more-info
-          - type: state-icon
+            style: {left: 66%, top: 36%}
+          - <<: *room_light
             entity: light.kaan_light
-            style:
-              left: 50%
-              top: 15%
-            tap_action:
-              action: toggle
-            double_tap_action:
-              action: more-info
-          - type: state-icon
+            style: {left: 50%, top: 15%}
+          - <<: *room_light
             entity: light.banyo_light
-            style:
-              left: 68%
-              top: 81%
-            tap_action:
-              action: toggle
-          - type: state-icon
+            style: {left: 68%, top: 81%}
+          - <<: *room_light
             entity: light.sercan_light
-            style:
-              left: 33%
-              top: 76%
-            tap_action:
-              action: toggle
-          - type: state-icon
+            style: {left: 33%, top: 76%}
+          - <<: *room_light
             entity: light.koridor1_light
-            style:
-              left: 63%
-              top: 61%
-            tap_action:
-              action: toggle
-          - type: state-icon
+            style: {left: 63%, top: 61%}
+          - <<: *room_light
             entity: light.bebek_light
-            style:
-              left: 33%
-              top: 40%
-            tap_action:
-              action: toggle
-          - type: state-label
+            style: {left: 33%, top: 40%}
+          # climate
+          - <<: *room_climate
             entity: climate.yatak_thermostat
-            attribute: current_temperature
-            tap_action:
-              action: more-info
-            style:
-              top: 27%
-              left: 70%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'red' if is_state('climate.yatak_thermostat', 'heat') else '#44739E' }};
-                  }
-          - type: state-label
-            entity: sensor.yatak_sensor_humidity
-            tap_action:
-              action: more-info
-            style:
-              top: 30%
-              left: 70%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'blue' if states('sensor.yatak_sensor_humidity') | int > 50 else 'green' }};
-                  }
-          - type: state-label
-            entity: sensor.bebek_sensor_humidity
-            tap_action:
-              action: more-info
-            style:
-              top: 30%
-              left: 30%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'blue' if states('sensor.bebek_sensor_humidity') | int > 50 else 'green' }};
-                  }
-          - type: state-label
-            entity: sensor.sercan_sensor_humidity
-            tap_action:
-              action: more-info
-            style:
-              top: 85%
-              left: 35%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'blue' if states('sensor.sercan_sensor_humidity') | int > 50 else 'green' }};
-                  }
-          - type: state-label
+            variables: {humidity: sensor.yatak_sensor_humidity}
+            style: {top: 28.5%, left: 70%}
+          - <<: *room_climate
             entity: climate.bebek_thermostat
-            attribute: current_temperature
-            tap_action:
-              action: more-info
-            style:
-              top: 27%
-              left: 30%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'red' if is_state('climate.bebek_thermostat', 'heat') else '#44739E' }};
-                  }
-          - type: state-label
+            variables: {humidity: sensor.bebek_sensor_humidity}
+            style: {top: 28.5%, left: 30%}
+          - <<: *room_climate
             entity: climate.banyo_thermostat
-            attribute: current_temperature
-            tap_action:
-              action: more-info
-            style:
-              top: 88%
-              left: 76%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'red' if is_state('climate.banyo_thermostat', 'heat') else '#44739E' }};
-                  }
-          - type: state-label
+            variables: {humidity: sensor.banyo_moisture_humidity}
+            style: {top: 89.5%, left: 76%}
+          - <<: *room_climate
             entity: climate.sercan_thermostat
-            attribute: current_temperature
-            style:
-              top: 82%
-              left: 35%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'red' if is_state('climate.sercan_thermostat', 'heat') else '#44739E' }};
-                  }
-            tap_action:
-              action: more-info
-          - type: state-label
-            entity: sensor.banyo_moisture_humidity
-            style:
-              top: 91%
-              left: 76%
-              font-size: 16px
-              color: blue
-              font-weight: bold
-            tap_action:
-              action: more-info
-          - type: state-icon
+            variables: {humidity: sensor.sercan_sensor_humidity}
+            style: {top: 83.5%, left: 35%}
+          # covers & others
+          - <<: *cover_icon
             entity: cover.bebek_cover
-            tap_action:
-              action: toggle
-            double_tap_action:
-              action: more-info
-            style:
-              left: 30%
-              top: 21%
-          - type: state-icon
+            tap_action: {action: perform-action, perform_action: script.cover_tap, data: {cover: cover.bebek_cover}}
+            style: {left: 30%, top: 21%}
+          - <<: *cover_icon
             entity: cover.yatak_cover
-            tap_action:
-              action: toggle
-            double_tap_action:
-              action: more-info
-            style:
-              left: 66%
-              top: 21%
-          - type: state-icon
+            tap_action: {action: perform-action, perform_action: script.cover_tap, data: {cover: cover.yatak_cover}}
+            style: {left: 66%, top: 21%}
+          - <<: *toggle_icon
             entity: fan.banyo_fan
-            style:
-              left: 80%
-              top: 74%
-            tap_action:
-              action: toggle
-          - type: state-icon
-            style:
-              left: 32%
-              top: 90%
+            style: {left: 80%, top: 74%}
+          - <<: *cover_icon
             entity: cover.sercan_cover
-          - type: state-icon
-            style:
-              left: 27%
-              top: 64%
+            tap_action: {action: perform-action, perform_action: script.cover_tap, data: {cover: cover.sercan_cover}}
+            style: {left: 32%, top: 90%}
+          - <<: *toggle_icon
             entity: switch.sercan_plug
+            style: {left: 27%, top: 64%}
           - type: state-icon
             entity: vacuum.roborock_s5_d456_robot_cleaner
-            style:
-              top: 81%
-              left: 26%
-          - type: state-icon
-            entity: cover.koridor1_blind
-            style:
-              left: 81%
-              top: 62%
-            icon: mdi:blinds-horizontal-closed
-          - <<: *forecast
-          - <<: *sercanlogo
-          - <<: *melikelogo
+            style: {left: 26%, top: 81%}
+          - <<: *cover_icon
+            entity: cover.koridor1_cover
+            tap_action: {action: perform-action, perform_action: script.cover_tap, data: {cover: cover.koridor1_cover}}
+            style: {left: 81%, top: 62%}
+          - *forecast
+          - *sercan
+          - *melike
+
   - title: Kat2
     path: floor-2
     badges: []
@@ -609,170 +448,57 @@ views:
       - type: picture-elements
         image: local/images/floorplan/kat2/dark.png
         elements:
-          - type: image
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-            state_image:
-              "on": local/images/floorplan/kat2/koridor2_light.png
-              "off": local/images/floorplan/kat2/koridor2_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(15%)
+          # light overlays
+          - <<: *overlay
             entity: light.koridor2_light
-          - type: image
+            image: local/images/floorplan/kat2/koridor2_light.png
+            state_filter: *filter_15
+          - <<: *overlay
             entity: light.melike_light
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat2/melike_light.png
-              "off": local/images/floorplan/kat2/melike_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
-          - type: image
+            image: local/images/floorplan/kat2/melike_light.png
+          - <<: *overlay
             entity: light.misafir_light
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat2/misafir_light.png
-              "off": local/images/floorplan/kat2/misafir_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
-          - type: image
+            image: local/images/floorplan/kat2/misafir_light.png
+          - <<: *overlay
             entity: light.tavan_light_2
-            style:
-              left: 50%
-              top: 50%
-              width: 100%
-              mix-blend-mode: screen
-              opacity: 50%
-            state_image:
-              "on": local/images/floorplan/kat2/tavan_light.png
-              "off": local/images/floorplan/kat2/tavan_light.png
-            state_filter:
-              "on": opacity(100%)
-              "off": opacity(30%)
-          - type: state-icon
+            image: local/images/floorplan/kat2/tavan_light.png
+          # lights
+          - <<: *room_light
             entity: light.koridor2_light
-            style:
-              left: 63%
-              top: 55%
-            tap_action:
-              action: toggle
-          - type: state-icon
+            style: {left: 63%, top: 55%}
+          - <<: *room_light
             entity: light.melike_light
-            style:
-              left: 27%
-              top: 61%
-            tap_action:
-              action: toggle
-          - type: state-icon
+            style: {left: 27%, top: 61%}
+          - <<: *room_light
             entity: light.misafir_light
-            style:
-              left: 47%
-              top: 35%
-            tap_action:
-              action: toggle
-          - type: state-label
+            style: {left: 47%, top: 35%}
+          - <<: *room_light
+            entity: light.tavan_light_2
+            style: {left: 32%, top: 47%}
+          # climate
+          - <<: *room_climate
             entity: climate.misafir_thermostat
-            attribute: current_temperature
-            tap_action:
-              action: more-info
-            style:
-              top: 25%
-              left: 35%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'red' if is_state('climate.misafir_thermostat', 'heat') else '#44739E' }};
-                  }
-          - type: state-label
+            variables: {humidity: sensor.misafir_sensor_humidity}
+            style: {top: 26.5%, left: 35%}
+          - <<: *room_climate
             entity: climate.melike_thermostat
-            attribute: current_temperature
-            style:
-              top: 74%
-              left: 31%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'red' if is_state('climate.melike_thermostat', 'heat') else '#44739E' }};
-                  }
-            tap_action:
-              action: more-info
+            variables: {humidity: sensor.melike_sensor_humidity}
+            style: {top: 75.5%, left: 31%}
           - type: state-label
-            entity: sensor.misafir_sensor_humidity
-            tap_action:
-              action: more-info
-            style:
-              top: 28%
-              left: 35%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'blue' if states('sensor.misafir_sensor_humidity') | int > 50 else 'green' }};
-                  }
-          - type: state-label
-            entity: sensor.melike_sensor_humidity
-            tap_action:
-              action: more-info
-            style:
-              top: 77%
-              left: 31%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ 'blue' if states('sensor.melike_sensor_humidity') | int > 50 else 'green' }};
-                  }
-          - type: state-icon
-            style:
-              top: 18%
-              left: 35%
-            entity: cover.misafir_cover
-            tap_action:
-              action: toggle
-          - type: state-label
-            tap_action:
-              action: more-info
-            style:
-              top: 65%
-              left: 85%
-              font-size: 16px
-              font-weight: bold
-            card_mod:
-              style: |
-                :host {
-                  color: {{ '#44739E' if states('sensor.boiler_curburnpow') | int == 0 else 'red' }};
-                  }
             entity: sensor.boiler_curburnpow
-          - type: state-icon
-            style:
-              left: 32%
-              top: 47%
-            entity: light.tavan_light_2
-            hold_action:
-              action: more-info
             tap_action:
-              action: toggle
-          - <<: *forecast
-          - <<: *sercanlogo
-          - <<: *melikelogo
+              action: more-info
+            style: {<<: *label_font, top: 65%, left: 85%}
+            card_mod:
+              style: |
+                :host {
+                  color: {{ '#44739E' if states(config.entity) | int(0) == 0 else 'red' }};
+                }
+          # covers & others
+          - <<: *cover_icon
+            entity: cover.misafir_cover
+            tap_action: {action: perform-action, perform_action: script.cover_tap, data: {cover: cover.misafir_cover}}
+            style: {left: 35%, top: 18%}
+          - *forecast
+          - *sercan
+          - *melike

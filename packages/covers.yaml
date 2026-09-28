@@ -1,0 +1,102 @@
+# Covers: window-guarded IKEA blinds and timed Tuya curtains, all wrapped by the gungors
+# integration. Previously split over ikea_sensor_covers.yaml and tuya_covers.yaml.
+
+cover:
+  # --- IKEA blinds -------------------------------------------------------------------
+  # Window-guarded blinds (gungors custom integration). Remote commands are
+  # held while the window is open. Physical buttons go through the pushbutton
+  # blueprint, which fires gungors_physical_cover for these covers.
+  - platform: gungors
+    type: window_guard
+    name: sercan_cover
+    unique_id: sercan_cover
+    cover: cover.sercan_blind
+    window: binary_sensor.sercan_window_contact
+    start_timeout: 8
+    stop_silence: 3
+
+  - platform: gungors
+    type: window_guard
+    name: bebek_cover
+    unique_id: bebek_cover
+    cover: cover.bebek_blind
+    window: binary_sensor.bebek_window_contact
+    start_timeout: 8
+    stop_silence: 3
+
+  - platform: gungors
+    type: window_guard
+    name: yatak_cover_window
+    unique_id: yatak_cover_window
+    cover: cover.yatak_blind_2
+    window: binary_sensor.yatak_window_contact
+    start_timeout: 8
+    stop_silence: 3
+
+  - platform: group
+    name: Yatak cover
+    unique_id: yatak_cover
+    entities:
+      - cover.yatak_cover_window
+      - cover.yatak_blind_1
+      - cover.yatak_blind_3
+
+  # No window sensor: nothing to guard, the wrapper only adds opening/closing.
+  - platform: gungors
+    type: window_guard
+    name: koridor1_cover
+    unique_id: koridor1_cover
+    cover: cover.koridor1_blind
+    start_timeout: 8
+    stop_silence: 3
+
+  # --- Tuya curtains -----------------------------------------------------------------
+  # Tuya curtain motors (Zigbee2MQTT) wrapped by the gungors integration:
+  # estimate position/direction while moving (no reports in between),
+  # take the real position from stop / end-of-move reports. Full-run times
+  # are learned per direction (open_time / close_time attributes).
+  # invert: the motor's open is the room's close; the wrapper flips commands
+  # and positions itself (Z2M's invert_cover only flips positions for this
+  # device, so it is left as it was).
+  - platform: gungors
+    type: timed_curtain
+    name: salon_cover
+    unique_id: salon_cover
+    cover: cover.salon_curtain
+    invert: true
+
+  - platform: gungors
+    type: timed_curtain
+    name: misafir_cover
+    unique_id: misafir_cover
+    cover: cover.misafir_curtain
+    invert: true
+
+script:
+  # Single-tap behaviour for covers on dashboards (used by floorplan.yaml).
+  # Unlike cover.toggle it does not depend on the last move's direction:
+  # moving -> stop, closed -> open, anything else (open or partly open) -> close.
+  cover_tap:
+    alias: cover_tap
+    description: Stop if moving, open if closed, otherwise close
+    mode: parallel
+    max: 20
+    fields:
+      cover:
+        description: Cover entity id
+    sequence:
+      - choose:
+          - conditions: "{{ states(cover) in ['opening', 'closing'] }}"
+            sequence:
+              - action: cover.stop_cover
+                target:
+                  entity_id: "{{ cover }}"
+          - conditions: "{{ is_state(cover, 'closed') }}"
+            sequence:
+              - action: cover.open_cover
+                target:
+                  entity_id: "{{ cover }}"
+        default:
+          - action: cover.close_cover
+            target:
+              entity_id: "{{ cover }}"

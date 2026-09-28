@@ -243,19 +243,80 @@ action:
               {{ 'cover' in functions and trigger.payload in functions['cover'] }}
         sequence:
           - choose:
+              # hold: every cover on the room's floor. Remote commands (normal cover
+              # services), so each room's window guard still applies: the person
+              # pressing is only responsible for their own window. If any cover is
+              # not closed, a per-floor backup scene is taken and all are closed;
+              # if all are already closed, the backup is restored.
               - conditions:
                   - condition: template
                     value_template: >-
-                      {{ functions['cover'][trigger.payload] == 'single'}}
+                      {{ functions['cover'][trigger.payload] == 'hold' }}
                 sequence:
-                  - action: cover.open_cover
+                  - variables:
+                      floor: >-
+                        {%- set ns = namespace(f='') -%}
+                        {%- for f in floors() if room in floor_areas(f) -%}{%- set ns.f = f -%}{%- endfor -%}
+                        {{- ns.f -}}
+                      floor_covers: >-
+                        {{ (floor_areas(floor) if floor else [room])
+                          | map('area_entities') | sum(start=[])
+                          | select('match', 'cover\.')
+                          | list }}
+                      backup_id: "cover_backup_{{ floor if floor else room }}"
+                  - if:
+                      - condition: template
+                        value_template: >-
+                          {{ floor_covers | map('states') | reject('eq', 'closed') | list | count > 0 }}
+                    then:
+                      - action: scene.create
+                        data:
+                          scene_id: "{{ backup_id }}"
+                          snapshot_entities: "{{ floor_covers }}"
+                      - action: cover.close_cover
+                        metadata: {}
+                        data: {}
+                        target: "{{ {'entity_id': floor_covers} }}"
+                    else:
+                      - if:
+                          - condition: template
+                            value_template: >-
+                              {{ states('scene.' ~ backup_id) not in ['unknown', 'unavailable'] }}
+                        then:
+                          - action: scene.turn_on
+                            target:
+                              entity_id: "scene.{{ backup_id }}"
+            # single / double: the room's covers, open / close. Physical press:
+            # window-guarded gungors covers get the gungors_physical_cover event
+            # (overrides the guard), all other covers get the normal service.
+            # Groups are expanded so guarded members get the event as well.
+            default:
+              - variables:
+                  direction: >-
+                    {{ 'open' if functions['cover'][trigger.payload] == 'single' else 'close' }}
+                  guarded: >-
+                    {{ expand(covers)
+                      | selectattr('entity_id', 'in', integration_entities('gungors'))
+                      | selectattr('attributes.is_sync', 'defined')
+                      | map(attribute='entity_id') | list }}
+                  plain: >-
+                    {{ expand(covers)
+                      | rejectattr('attributes.is_sync', 'defined')
+                      | map(attribute='entity_id') | list }}
+              - if:
+                  - condition: template
+                    value_template: "{{ guarded | count > 0 }}"
+                then:
+                  - event: gungors_physical_cover
+                    event_data:
+                      entity_id: "{{ guarded }}"
+                      action: "{{ direction }}"
+              - if:
+                  - condition: template
+                    value_template: "{{ plain | count > 0 }}"
+                then:
+                  - action: cover.{{ direction }}_cover
                     metadata: {}
                     data: {}
-                    target: "{{ {'entity_id': covers} }}"
-              - conditions: []
-                sequence:
-                  - action: cover.close_cover
-                    metadata: {}
-                    data: {}
-                    target: "{{ {'entity_id': covers} }}"
+                    target: "{{ {'entity_id': plain} }}"
 mode: single
