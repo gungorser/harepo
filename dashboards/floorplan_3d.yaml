@@ -1,7 +1,8 @@
 # Floorplan 3D dashboard: live-lit Blender renders of each floor (custom:gungors-floor-card from
-# the ha-dashboards HACS repository). The page of a floor (index.html + layer images) is build output
-# of the ha-floorplan Blender project, deployed to /config/www/gungors_floor/<floor>/.
+# the ha-dashboards HACS repository). The page (index.html) and the render of each floor are build
+# output of the ha-floorplan project, deployed to /config/www/gungors_floor/.
 # The page draws; here its entities are mapped to Home Assistant entities and their actions are set.
+# The time comes from Home Assistant's time zone, the day (sunrise, sunset) from sun.
 # Nothing happens by default: every tap/hold is written here.
 #
 # Action standard (same as floorplan.yaml):
@@ -18,7 +19,6 @@ views:
     cards:
       - type: custom:gungors-floor-card
         floor: kat0
-        time: sensor.time
         sun: sun.sun
         entities:
           # covers
