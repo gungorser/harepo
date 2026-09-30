@@ -1,15 +1,16 @@
 # Floorplan 3D dashboard: live-lit Blender renders of each floor (custom:gungors-floor-card from
-# the ha-dashboards HACS repository). The pictures (model.json + layer images) are build output
-# of the ha-floorplan Blender project, deployed to /config/www/gungors_floor/<floor>/.
-# Here, like on the floorplan dashboard, only the entities and their actions are set.
+# the ha-dashboards HACS repository). The page (index.html) and the render of each floor are build
+# output of the ha-floorplan project, deployed to /config/www/gungors_floor/.
+# The page draws; here its entities are mapped to Home Assistant entities and their actions are set.
+# The time comes from Home Assistant's time zone, the day (sunrise, sunset) from sun.
+# Nothing happens by default: every tap/hold is written here.
 #
 # Action standard (same as floorplan.yaml):
-#   lights: tap toggle (card default), hold more-info
+#   lights: tap toggle, hold more-info
 #   covers: tap script.cover_tap (moving -> stop, closed -> open, else close), hold more-info
-#   cover.garaj_door, cover.yemek_blind (garden door) and cover.mutfak_blind (kitchen window) are not in
-#   Home Assistant yet: a tap only opens/closes them in the picture.
-# The standalone page of the floor (ha-floorplan svg/<floor>.html) runs the same card; keep its
-# options (ha-floorplan src/config.json "card") like these.
+#   garaj_door, yemek_blind (garden door) and mutfak_blind (kitchen window) are not in Home Assistant
+#   yet: none (background in the picture).
+# A page entity left out of the list shows up on the page (top right) with its name: map it or set none.
 
 views:
   - title: Kat0
@@ -18,22 +19,46 @@ views:
     cards:
       - type: custom:gungors-floor-card
         floor: kat0
+        sun: sun.sun
         entities:
           # covers
-          - entity: cover.salon_cover
-            tap_action: {action: perform-action, perform_action: script.cover_tap, data: {cover: cover.salon_cover}}
-          - entity: cover.garaj_door
-            tap_action: {action: toggle}
-          - entity: cover.yemek_blind
-            tap_action: {action: toggle}
-          - entity: cover.mutfak_blind
-            tap_action: {action: toggle}
+          salon_cover:
+            entity: cover.salon_cover
+            tap_action:
+              action: perform-action
+              perform_action: script.cover_tap
+              data:
+                cover: cover.salon_cover
+            hold_action:
+              action: more-info
+          garaj_door: none
+          yemek_blind: none
+          mutfak_blind: none
           # lights
-          - light.salon_light
-          - light.garaj_light
-          - light.koridor0_light
-          - light.mutfak_light
-          - light.yemek_light
-          - light.car_light
-          - light.bahce_light_1
-          - light.bahce_light
+          salon_light: &light
+            entity: light.salon_light
+            tap_action:
+              action: toggle
+            hold_action:
+              action: more-info
+          garaj_light:
+            <<: *light
+            entity: light.garaj_light
+          koridor0_light:
+            <<: *light
+            entity: light.koridor0_light
+          mutfak_light:
+            <<: *light
+            entity: light.mutfak_light
+          yemek_light:
+            <<: *light
+            entity: light.yemek_light
+          car_light:
+            <<: *light
+            entity: light.car_light
+          bahce_light_1:
+            <<: *light
+            entity: light.bahce_light_1
+          bahce_light:
+            <<: *light
+            entity: light.bahce_light
