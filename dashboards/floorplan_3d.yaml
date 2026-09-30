@@ -9,7 +9,8 @@
 #   lights: tap toggle, hold more-info
 #   covers: tap script.cover_tap (moving -> stop, closed -> open, else close), hold more-info
 #   garaj_door, yemek_blind (garden door) and mutfak_blind (kitchen window) are not in Home Assistant
-#   yet: none (background in the picture).
+#   yet: none (background in the picture) with a fixed position: the garage door closed, the blinds
+#   open (card 1.12).
 # A page entity left out of the list shows up on the page (top right) with its name: map it or set none.
 
 views:
@@ -31,9 +32,15 @@ views:
                 cover: cover.salon_cover
             hold_action:
               action: more-info
-          garaj_door: none
-          yemek_blind: none
-          mutfak_blind: none
+          garaj_door:             # value: fixed position in the picture, 0 closed - 100 open
+            entity: none
+            value: 0
+          yemek_blind:
+            entity: none
+            value: 100
+          mutfak_blind:
+            entity: none
+            value: 100
           # lights
           salon_light: &light
             entity: light.salon_light
