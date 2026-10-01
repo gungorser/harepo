@@ -3,13 +3,13 @@
 # from config entries (a `vacuum: - platform: xiaomi_miot` entry loads no spec and adds nothing).
 #   vacuum.roborock_s5_d456_robot_cleaner   Roborock S5 (roborock.vacuum.s5), Yatak
 #   vacuum.xiaomi_c102gl_9267_robot_cleaner Xiaomi X20+ (xiaomi.vacuum.c102gl), Salon
-# Hosts, tokens and the Xiaomi account live in secrets.yaml.
+# Tokens and the Xiaomi account live in secrets.yaml; hosts are the vacuums' LAN addresses.
 
 camera:
   # Roborock S5: supported by the extractor's xiaomi (Roborock) API.
   - platform: xiaomi_cloud_map_extractor
     name: yatak_vacuum_map
-    host: !secret yatak_vacuum_host
+    host: 192.168.0.175
     token: !secret yatak_vacuum_token
     username: !secret xiaomi_cloud_username
     password: !secret xiaomi_cloud_password
@@ -27,7 +27,7 @@ camera:
   # Xiaomi X20+: its model is not in the extractor's list, so the Dreame API is forced.
   - platform: xiaomi_cloud_map_extractor
     name: salon_vacuum_map
-    host: !secret salon_vacuum_host
+    host: 192.168.0.77
     token: !secret salon_vacuum_token
     username: !secret xiaomi_cloud_username
     password: !secret xiaomi_cloud_password
