@@ -15,6 +15,7 @@
 # A page entity left out of the list shows up on the page (top right) with its name: map it or set none.
 # All floors are in one card (floors:); the floor button of the card's dock goes on to the next floor.
 # Kat1: balkon_light is the balcony lamp; the bedroom (yatak) has three blinds: north window, balcony door, east window.
+# Kat2 (attic): the covers and climates of the old floorplan's kat2 view; no lamps in the render yet.
 
 views:
   - title: Floorplan
@@ -169,3 +170,22 @@ views:
               balkon_light:           # the balcony lamp (Home Assistant still calls it kaan_light)
                 <<: *light
                 entity: light.kaan_light
+          - floor: kat2
+            entities:
+              # covers: the guest room's dormer curtain
+              misafir_cover:
+                entity: cover.misafir_cover
+                tap_action:
+                  action: perform-action
+                  perform_action: script.cover_tap
+                  data:
+                    cover: cover.misafir_cover
+                hold_action:
+                  action: more-info
+              # rooms (climate: the room's thermostat)
+              misafir_climate:
+                <<: *climate
+                entity: climate.misafir_thermostat
+              melike_climate:
+                <<: *climate
+                entity: climate.melike_thermostat
