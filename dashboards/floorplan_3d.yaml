@@ -7,7 +7,7 @@
 #
 # Action standard (same as floorplan.yaml):
 #   lights: tap toggle, hold more-info
-#   rooms (climate): tap and hold more-info
+#   rooms (climate) and objects (tv, vacuum): tap and hold more-info
 #   covers: tap script.cover_tap (moving -> stop, closed -> open, else close), hold more-info
 #   garaj_door, yemek_blind (garden door) and mutfak_blind (kitchen window) are not in Home Assistant
 #   yet: none (background in the picture) with a fixed position: the garage door closed, the blinds
@@ -53,6 +53,16 @@ views:
                   action: more-info
                 hold_action:
                   action: more-info
+              # objects: tap and hold more-info (like their icons on floorplan.yaml)
+              salon_tv: &object
+                entity: media_player.salon_tv
+                tap_action:
+                  action: more-info
+                hold_action:
+                  action: more-info
+              salon_vacuum:
+                <<: *object
+                entity: vacuum.xiaomi_c102gl_9267_robot_cleaner
               # lights
               salon_light: &light
                 entity: light.salon_light
