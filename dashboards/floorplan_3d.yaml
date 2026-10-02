@@ -17,6 +17,7 @@
 # A page entity left out of the list shows up on the page (top right) with its name: map it or set none.
 # All floors are in one card (floors:); the floor button of the card's dock goes on to the next floor.
 # Kat1: balkon_light is the balcony lamp; the bedroom (yatak) has three blinds: north window, balcony door, east window.
+#   A tap or hold on any of the three goes to their group cover.yatak_cover; each shows its own position.
 # Kat2 (attic): the covers and climates of the old floorplan's kat2 view; no lamps in the render yet.
 # Climates are the rooms' radiators (kat1, kat2).
 #
@@ -150,31 +151,21 @@ views:
                   action: more-info
               yatak_blind_pencere:            # north window
                 entity: cover.yatak_blind_1
-                tap_action:
-                  action: perform-action
-                  perform_action: script.cover_tap
-                  data:
-                    cover: cover.yatak_blind_1
-                hold_action:
-                  action: more-info
+                <<: &yatak_blind              # all three command the group cover.yatak_cover; position from its own blind
+                  tap_action:
+                    action: perform-action
+                    perform_action: script.cover_tap
+                    data:
+                      cover: cover.yatak_cover
+                  hold_action:
+                    action: more-info
+                    entity: cover.yatak_cover
               yatak_blind_kapi:               # balcony door
                 entity: cover.yatak_blind_3
-                tap_action:
-                  action: perform-action
-                  perform_action: script.cover_tap
-                  data:
-                    cover: cover.yatak_blind_3
-                hold_action:
-                  action: more-info
+                <<: *yatak_blind
               yatak_blind_dogu:               # east window (window contact: guarded)
                 entity: cover.yatak_cover_window
-                tap_action:
-                  action: perform-action
-                  perform_action: script.cover_tap
-                  data:
-                    cover: cover.yatak_cover_window
-                hold_action:
-                  action: more-info
+                <<: *yatak_blind
               banyo_cover:                    # bathroom window curtain (manual: follows its position, not selectable)
                 entity: cover.banyo_cover
                 selectable: false
