@@ -24,8 +24,8 @@
 # Lighting of the house (no render needed): `lighting.default` everywhere, also at night; while the sun
 # is up each room of a floor (`rooms`, the zones of its render) adds its `sun` and `covers` x how far
 # its covers are open (their mean), times `factor`; a room left out: sun 1, covers 2. `other` = what is
-# in no room (rooms without covers, the outside). E.g. sun 1, covers 2: day open 4, day closed 2,
-# night 1. A light's `gain`: its brightness at full intensity, times the render's.
+# in no room (rooms without covers, the outside). E.g. default 0.5, sun 1, covers 2: day open 3.5, day closed 1.5,
+# night 0.5. A light's `gain`: its brightness at full intensity, times the render's.
 
 views:
   - title: Floorplan
@@ -35,7 +35,7 @@ views:
       - type: custom:gungors-floor-card
         sun: sun.sun
         lighting:
-          default: 1
+          default: 0.5
         floors:
           - floor: kat0
             rooms:
