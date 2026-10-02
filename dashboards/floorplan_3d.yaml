@@ -23,7 +23,7 @@
 #
 # Lighting of the house (no render needed): `lighting.default` everywhere, also at night; while the sun
 # is up each room of a floor (`rooms`, the zones of its render) adds its `sun` and `covers` x how far
-# its covers are open (their mean), times `factor`; a room left out: sun 1, covers 2. `other` = what is
+# its covers are open (their mean); a room left out: sun 1, covers 2. `other` = what is
 # in no room (rooms without covers, the outside). E.g. default 0.15, sun 1, covers 2: day open 3.15, day closed 1.15,
 # night 0.15. A light's `gain`: its brightness at full intensity, times the render's.
 
@@ -41,7 +41,7 @@ views:
             rooms:
               salon: {sun: 1, covers: 2}
               garaj: {sun: 1, covers: 2}
-              koridor0: {sun: 1, covers: 2, factor: 0.7}    # the hallway 30% darker
+              koridor0: {sun: 0.7, covers: 1.4}             # the hallway 30% darker by day
               other: {sun: 3}
             entities:
               # covers
@@ -204,8 +204,8 @@ views:
           - floor: kat2
             rooms:
               misafir: {sun: 1, covers: 2}
-              cati_arasi: {sun: 0, covers: 0, factor: 0.05}  # behind the knee wall: dark
-              misafir_cati_arasi: {sun: 0, covers: 0, factor: 0.05}  # guest room under the roof, below 1 m: dark
+              cati_arasi: {sun: 0, covers: 0}               # behind the knee wall: only default
+              misafir_cati_arasi: {sun: 0, covers: 0}       # guest room under the roof, below 1 m: only default
               other: {sun: 3}
             entities:
               # covers: the guest room's dormer curtain
