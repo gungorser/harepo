@@ -3,10 +3,11 @@
 # for the covers without a device (manual or not connected yet).
 
 # --- Covers without a device ---------------------------------------------------------
-# Kitchen (mutfak) and dining (yemek) blinds, the small living room curtain (salon kucuk)
-# and the garage door: a position number each, 0-100 (0 closed). `initial` is the position
-# after a restart or a reload of input numbers; change it here. Move the cover by setting the
-# number (or through its template cover below); swap the actions for a real device later.
+# Kitchen (mutfak) and dining (yemek) blinds, the small living room curtain (salon kucuk),
+# the bathroom (banyo) curtain and the garage door: a position number each, 0-100 (0 closed).
+# `initial` is the position after a restart or a reload of input numbers; change it here. Move
+# the cover by setting the number (the floorplan_3d dashboard's configs tab, or through its
+# template cover below); swap the actions for a real device later.
 input_number:
   mutfak_cover_position:
     name: Mutfak cover position
@@ -28,6 +29,15 @@ input_number:
 
   salon_kucuk_cover_position:
     name: Salon kucuk cover position
+    initial: 100 # position after a restart / reload, 0 closed - 100 open
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    icon: mdi:curtains
+
+  banyo_cover_position:
+    name: Banyo cover position
     initial: 100 # position after a restart / reload, 0 closed - 100 open
     min: 0
     max: 100
@@ -112,6 +122,29 @@ template:
           - action: input_number.set_value
             target:
               entity_id: input_number.salon_kucuk_cover_position
+            data:
+              value: "{{ position }}"
+
+      - name: banyo_cover
+        unique_id: banyo_cover
+        device_class: curtain
+        position: "{{ states('input_number.banyo_cover_position') | int(0) }}"
+        open_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.banyo_cover_position
+            data:
+              value: 100
+        close_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.banyo_cover_position
+            data:
+              value: 0
+        set_cover_position:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.banyo_cover_position
             data:
               value: "{{ position }}"
 

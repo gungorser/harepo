@@ -228,3 +228,21 @@ views:
               melike_climate:
                 <<: *climate
                 entity: climate.melike_thermostat
+  # Positions of the covers without a device (input numbers in packages/covers.yaml; their
+  # initial value after a restart is set there)
+  - title: configs
+    path: configs
+    cards:
+      - type: entities
+        title: Cover positions
+        entities:
+          - entity: input_number.mutfak_cover_position
+            name: Mutfak blind
+          - entity: input_number.yemek_cover_position
+            name: Yemek blind
+          - entity: input_number.salon_kucuk_cover_position
+            name: Salon kucuk perde
+          - entity: input_number.banyo_cover_position
+            name: Banyo perde
+          - entity: input_number.garaj_door_position
+            name: Garaj kapisi
