@@ -16,6 +16,13 @@
 # All floors are in one card (floors:); the floor button of the card's dock goes on to the next floor.
 # Kat1: balkon_light is the balcony lamp; the bedroom (yatak) has three blinds: north window, balcony door, east window.
 # Kat2 (attic): the covers and climates of the old floorplan's kat2 view; no lamps in the render yet.
+# Climates are the rooms' radiators (kat1, kat2).
+#
+# Lighting of the house (no render needed): `lighting.default` everywhere, also at night; while the sun
+# is up each room of a floor (`rooms`, the zones of its render) adds its `sun` and `covers` x how far
+# its covers are open (their mean), times `factor`; a room left out: sun 1, covers 2. `other` = what is
+# in no room (rooms without covers, the outside). E.g. sun 1, covers 2: day open 4, day closed 2,
+# night 1. A light's `gain`: its brightness at full intensity, times the render's.
 
 views:
   - title: Floorplan
@@ -24,8 +31,15 @@ views:
     cards:
       - type: custom:gungors-floor-card
         sun: sun.sun
+        lighting:
+          default: 1
         floors:
           - floor: kat0
+            rooms:
+              salon: {sun: 1, covers: 2}
+              garaj: {sun: 1, covers: 2}
+              koridor0: {sun: 1, covers: 2, factor: 0.7}    # the hallway 30% darker
+              other: {sun: 3}
             entities:
               # covers
               salon_cover:
@@ -64,15 +78,16 @@ views:
                 <<: *object
                 entity: vacuum.xiaomi_c102gl_9267_robot_cleaner
               # lights
-              salon_light: &light
-                entity: light.salon_light
+              garaj_light: &light
+                entity: light.garaj_light
                 tap_action:
                   action: toggle
                 hold_action:
                   action: more-info
-              garaj_light:
+              salon_light:
                 <<: *light
-                entity: light.garaj_light
+                entity: light.salon_light
+                gain: 2                       # twice as bright as the render
               koridor0_light:
                 <<: *light
                 entity: light.koridor0_light
@@ -92,6 +107,12 @@ views:
                 <<: *light
                 entity: light.bahce_light
           - floor: kat1
+            rooms:
+              sercan: {sun: 1, covers: 2}
+              bebek: {sun: 1, covers: 2}
+              yatak: {sun: 1, covers: 2}                    # three blinds: their mean
+              koridor1: {sun: 1, covers: 2}
+              other: {sun: 3}
             entities:
               # covers (blinds cover the whole window: both panes and the top-hung sash)
               bebek_blind:
@@ -148,7 +169,7 @@ views:
                     cover: cover.yatak_cover_window
                 hold_action:
                   action: more-info
-              # rooms (climate: the room's thermostat): the room's area, below lamps and blinds
+              # radiators (climate: the room's thermostat)
               bebek_climate:
                 <<: *climate
                 entity: climate.bebek_thermostat
@@ -158,9 +179,7 @@ views:
               sercan_climate:
                 <<: *climate
                 entity: climate.sercan_thermostat
-              banyo_climate:
-                <<: *climate
-                entity: climate.banyo_thermostat
+              # banyo_climate (the towel radiator): back once the render has it as an entity
               # lights
               yatak_light:
                 <<: *light
@@ -181,6 +200,10 @@ views:
                 <<: *light
                 entity: light.kaan_light
           - floor: kat2
+            rooms:
+              misafir: {sun: 1, covers: 2}
+              cati_arasi: {sun: 0, covers: 0, factor: 0.05}  # behind the knee wall: dark
+              other: {sun: 3}
             entities:
               # covers: the guest room's dormer curtain
               misafir_cover:
@@ -192,7 +215,7 @@ views:
                     cover: cover.misafir_cover
                 hold_action:
                   action: more-info
-              # rooms (climate: the room's thermostat)
+              # radiators (climate: the room's thermostat)
               misafir_climate:
                 <<: *climate
                 entity: climate.misafir_thermostat
