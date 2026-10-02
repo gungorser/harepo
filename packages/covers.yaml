@@ -1,5 +1,142 @@
 # Covers: window-guarded IKEA blinds and timed Tuya curtains, all wrapped by the gungors
-# integration. Previously split over ikea_sensor_covers.yaml and tuya_covers.yaml.
+# integration (previously ikea_sensor_covers.yaml and tuya_covers.yaml), and template covers
+# for the covers without a device (manual or not connected yet).
+
+# --- Covers without a device ---------------------------------------------------------
+# Kitchen (mutfak) and dining (yemek) blinds, the small living room curtain (salon kucuk)
+# and the garage door: a position number each, 0-100 (0 closed). `initial` is the position
+# after a restart or a reload of input numbers; change it here. Move the cover by setting the
+# number (or through its template cover below); swap the actions for a real device later.
+input_number:
+  mutfak_cover_position:
+    name: Mutfak cover position
+    initial: 100 # position after a restart / reload, 0 closed - 100 open
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    icon: mdi:roller-shade
+
+  yemek_cover_position:
+    name: Yemek cover position
+    initial: 100 # position after a restart / reload, 0 closed - 100 open
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    icon: mdi:roller-shade
+
+  salon_kucuk_cover_position:
+    name: Salon kucuk cover position
+    initial: 100 # position after a restart / reload, 0 closed - 100 open
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    icon: mdi:curtains
+
+  garaj_door_position:
+    name: Garaj door position
+    initial: 0   # position after a restart / reload, 0 closed - 100 open
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+    icon: mdi:garage
+
+template:
+  - cover:
+      - name: mutfak_cover
+        unique_id: mutfak_cover
+        device_class: shade
+        position: "{{ states('input_number.mutfak_cover_position') | int(0) }}"
+        open_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.mutfak_cover_position
+            data:
+              value: 100
+        close_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.mutfak_cover_position
+            data:
+              value: 0
+        set_cover_position:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.mutfak_cover_position
+            data:
+              value: "{{ position }}"
+
+      - name: yemek_cover
+        unique_id: yemek_cover
+        device_class: shade
+        position: "{{ states('input_number.yemek_cover_position') | int(0) }}"
+        open_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.yemek_cover_position
+            data:
+              value: 100
+        close_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.yemek_cover_position
+            data:
+              value: 0
+        set_cover_position:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.yemek_cover_position
+            data:
+              value: "{{ position }}"
+
+      - name: salon_kucuk_cover
+        unique_id: salon_kucuk_cover
+        device_class: curtain
+        position: "{{ states('input_number.salon_kucuk_cover_position') | int(0) }}"
+        open_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.salon_kucuk_cover_position
+            data:
+              value: 100
+        close_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.salon_kucuk_cover_position
+            data:
+              value: 0
+        set_cover_position:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.salon_kucuk_cover_position
+            data:
+              value: "{{ position }}"
+
+      - name: garaj_door
+        unique_id: garaj_door
+        device_class: garage
+        position: "{{ states('input_number.garaj_door_position') | int(0) }}"
+        open_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.garaj_door_position
+            data:
+              value: 100
+        close_cover:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.garaj_door_position
+            data:
+              value: 0
+        set_cover_position:
+          - action: input_number.set_value
+            target:
+              entity_id: input_number.garaj_door_position
+            data:
+              value: "{{ position }}"
 
 cover:
   # --- IKEA blinds -------------------------------------------------------------------
