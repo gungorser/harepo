@@ -117,6 +117,7 @@ views:
               bebek: {sun: 1, covers: 2}
               yatak: {sun: 1, covers: 2}                    # three blinds: their mean
               koridor1: {sun: 1, covers: 2}
+              banyo: {sun: 1, covers: 2}                    # the window curtain (banyo_cover)
               other: {sun: 3}
             entities:
               # covers (blinds cover the whole window: both panes and the top-hung sash)
@@ -213,6 +214,7 @@ views:
             rooms:
               misafir: {sun: 1, covers: 2}
               cati_arasi: {sun: 0, covers: 0, factor: 0.05}  # behind the knee wall: dark
+              misafir_cati_arasi: {sun: 0, covers: 0, factor: 0.05}  # guest room under the roof, below 1 m: dark
               other: {sun: 3}
             entities:
               # covers: the guest room's dormer curtain
