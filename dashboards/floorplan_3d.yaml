@@ -11,7 +11,8 @@
 #   covers: tap script.cover_tap (moving -> stop, closed -> open, else close), hold more-info
 #   garaj_door is not in Home Assistant yet: none (background in the picture) with a fixed position,
 #   closed (card 1.12). yemek_blind (garden door) and mutfak_blind (kitchen window) have no device
-#   yet: template covers on a position number (packages/covers.yaml).
+#   yet: template covers on a position number (packages/covers.yaml). They are manual blinds:
+#   selectable: false (card 1.14), background like none, but the picture follows their position.
 # A page entity left out of the list shows up on the page (top right) with its name: map it or set none.
 # All floors are in one card (floors:); the floor button of the card's dock goes on to the next floor.
 # Kat1: balkon_light is the balcony lamp; the bedroom (yatak) has three blinds: north window, balcony door, east window.
@@ -54,24 +55,12 @@ views:
               garaj_door:             # value: fixed position in the picture, 0 closed - 100 open
                 entity: none
                 value: 0
-              yemek_blind:            # garden door
+              yemek_blind:            # garden door (manual: follows its position, not selectable)
                 entity: cover.yemek_cover
-                tap_action:
-                  action: perform-action
-                  perform_action: script.cover_tap
-                  data:
-                    cover: cover.yemek_cover
-                hold_action:
-                  action: more-info
-              mutfak_blind:           # kitchen window
+                selectable: false
+              mutfak_blind:           # kitchen window (manual: follows its position, not selectable)
                 entity: cover.mutfak_cover
-                tap_action:
-                  action: perform-action
-                  perform_action: script.cover_tap
-                  data:
-                    cover: cover.mutfak_cover
-                hold_action:
-                  action: more-info
+                selectable: false
               # underfloor heating (climate): every room but the garage, below lamps and covers
               salon_climate: &climate
                 entity: climate.salon_thermostat
