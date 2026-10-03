@@ -11,9 +11,10 @@
 #   covers: tap script.cover_tap (moving -> stop, closed -> open, else close), hold more-info
 #   garaj_door (garage door), yemek_blind (garden door), mutfak_blind (kitchen window),
 #   salon_kucuk_cover (small curtain, salon's east window), kat1 banyo_cover (bathroom window
-#   curtain) and kat2 koridor2_cover (attic hall window curtain) have no device: template covers on a position number (packages/covers.yaml, initial
-#   position at its top; the configs tab sets them). They are manual: selectable: false (card
-#   1.14), background like none, but the picture follows their position.
+#   curtain) and kat2 koridor2_cover (attic hall window curtain) have no device: template covers
+#   on a position number (packages/covers.yaml, initial position at its top; the configs tab sets
+#   them). They are manual: selectable: false (card 1.14), background like none, but the picture
+#   follows their position.
 # A page entity left out of the list shows up on the page (top right) with its name: map it or set none.
 # All floors are in one card (floors:); the floor button of the card's dock goes on to the next floor.
 # Kat1: balkon_light is the balcony lamp; the bedroom (yatak) has three blinds: north window, balcony door, east window.
