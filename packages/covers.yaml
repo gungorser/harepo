@@ -4,7 +4,8 @@
 
 # --- Covers without a device ---------------------------------------------------------
 # Kitchen (mutfak) and dining (yemek) blinds, the small living room curtain (salon kucuk),
-# the bathroom (banyo) curtain, the attic hall (koridor2) window curtain and the garage door: a position number each, 0-100 (0 closed).
+# the bathroom (banyo) curtain, the attic hall (koridor2) window curtain and the garage door:
+# a position number each, 0-100 (0 closed).
 # `initial` is the position after a restart or a reload of input numbers; change it here. Move
 # the cover by setting the number (the floorplan_3d dashboard's configs tab, or through its
 # template cover below); swap the actions for a real device later.
