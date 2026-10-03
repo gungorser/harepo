@@ -10,8 +10,8 @@
 #   rooms (climate) and objects (tv, vacuum): tap and hold more-info
 #   covers: tap script.cover_tap (moving -> stop, closed -> open, else close), hold more-info
 #   garaj_door (garage door), yemek_blind (garden door), mutfak_blind (kitchen window),
-#   salon_kucuk_cover (small curtain, salon's east window) and kat1 banyo_cover (bathroom window
-#   curtain) have no device: template covers on a position number (packages/covers.yaml, initial
+#   salon_kucuk_cover (small curtain, salon's east window), kat1 banyo_cover (bathroom window
+#   curtain) and kat2 koridor2_cover (attic hall window curtain) have no device: template covers on a position number (packages/covers.yaml, initial
 #   position at its top; the configs tab sets them). They are manual: selectable: false (card
 #   1.14), background like none, but the picture follows their position.
 # A page entity left out of the list shows up on the page (top right) with its name: map it or set none.
@@ -208,7 +208,7 @@ views:
               misafir_cati_arasi: {sun: 0, covers: 0}       # guest room under the roof, below 1 m: only default
               other: {sun: 3}
             entities:
-              # covers: the guest room's dormer curtain
+              # covers: the guest room's dormer curtain, the hall window's curtain
               misafir_cover:
                 entity: cover.misafir_cover
                 tap_action:
@@ -218,6 +218,9 @@ views:
                     cover: cover.misafir_cover
                 hold_action:
                   action: more-info
+              koridor2_cover:                 # attic hall window curtain (manual: follows its position, not selectable)
+                entity: cover.koridor2_cover
+                selectable: false
               # radiators (climate: the room's thermostat)
               misafir_climate:
                 <<: *climate
@@ -241,5 +244,7 @@ views:
             name: Salon kucuk perde
           - entity: input_number.banyo_cover_position
             name: Banyo perde
+          - entity: input_number.koridor2_cover_position
+            name: Koridor2 perde
           - entity: input_number.garaj_door_position
             name: Garaj kapisi
